@@ -1,0 +1,7 @@
+procs:
+  client:
+    cwd: app/client
+    shell: pnpm run dev
+  api:
+    cwd: app/api
+    shell: pnpm run dev

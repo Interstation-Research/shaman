@@ -1,17 +1,53 @@
 import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
+  enums: {
+    TransactionType: ["Deposit", "Execute"],
+    RoleType: ["None", "Admin"],
+  },
   tables: {
+    ShamanConfig: {
+      codegen: {
+        dataStruct: false,
+      },
+      schema: {
+        tokenAddress: "address",
+      },
+      key: [],
+    },
     Shamans: {
       codegen: {
         dataStruct: false,
       },
       schema: {
         shamanId: "bytes32",
-        creator: "address", // creator address
+        creator: "address",
+        createdAt: "uint256",
         active: "bool",
+        balance: "uint256", // track $SHAMAN token balance
       },
       key: ["shamanId"],
+    },
+    ShamanTransactions: {
+      codegen: {
+        dataStruct: false,
+      },
+      schema: {
+        transactionId: "bytes32",
+        transactionType: "TransactionType", // Deposit (+) or Execute (-)
+        shamanId: "bytes32",
+        amount: "uint256", // amount in $SHAMAN
+        success: "bool",
+        createdAt: "uint256",
+      },
+      key: ["transactionId"],
+    },
+    Roles: {
+      schema: {
+        sender: "address",
+        role: "RoleType",
+      },
+      key: ["sender"],
     },
   },
 });

@@ -6,6 +6,8 @@ import { TransactionType } from "../codegen/common.sol";
 import { IShamanToken } from "../IShamanToken.sol";
 
 contract ShamanSystem is BaseSystem {
+  event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
+
   function createShaman(uint256 initialDeposit) public {
     bytes32 shamanId = keccak256(
       abi.encodePacked(_msgSender(), block.timestamp, block.prevrandao)
@@ -33,6 +35,8 @@ contract ShamanSystem is BaseSystem {
       ShamanTransactions.setSuccess(transactionId, true);
       ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
     }
+
+    emit ShamanCreated(shamanId, _msgSender());
   }
 
   function executeShaman(

@@ -7,7 +7,6 @@ import { IShamanToken } from "./IShamanToken.sol";
 
 contract ShamanToken is IShamanToken, ERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
   address public treasury;
   uint256 public maxSupply;
@@ -30,18 +29,19 @@ contract ShamanToken is IShamanToken, ERC20, AccessControl {
     _mint(to, amount);
   }
 
-  function buy(uint256 quantity, address recipient) public payable {
+  function buy(address to, uint256 amount) public payable {
     require(saleActive, "Sale is not active");
-    require(quantity > 0, "Quantity must be greater than 0");
-    uint256 totalCost = quantity * price;
+    require(amount > 0, "Quantity must be greater than 0");
+    uint256 totalCost = amount * price;
     require(msg.value >= totalCost, "Insufficient funds");
-    require(totalSupply() + quantity <= maxSupply, "Exceeds max supply");
+    require(totalSupply() + amount <= maxSupply, "Exceeds max supply");
 
-    _mint(recipient, quantity);
+    _mint(to, amount);
   }
 
-  function burn(address from, uint256 amount) public onlyRole(BURNER_ROLE) {
-    _burn(from, amount);
+  function burn(address account, uint256 amount) public {
+    require(_msgSender() == account, "Can only burn own tokens");
+    _burn(account, amount);
   }
 
   function setPrice(uint256 _price) public onlyRole(DEFAULT_ADMIN_ROLE) {

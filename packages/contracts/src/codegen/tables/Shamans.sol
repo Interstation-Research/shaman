@@ -21,12 +21,12 @@ library Shamans {
   ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005368616d616e73000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0015020014010000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0055040014200120000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (address, bool)
-  Schema constant _valueSchema = Schema.wrap(0x0015020061600000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (address, uint256, bool, uint256)
+  Schema constant _valueSchema = Schema.wrap(0x00550400611f601f000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -42,9 +42,11 @@ library Shamans {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](2);
+    fieldNames = new string[](4);
     fieldNames[0] = "creator";
-    fieldNames[1] = "active";
+    fieldNames[1] = "createdAt";
+    fieldNames[2] = "active";
+    fieldNames[3] = "balance";
   }
 
   /**
@@ -104,13 +106,55 @@ library Shamans {
   }
 
   /**
+   * @notice Get createdAt.
+   */
+  function getCreatedAt(bytes32 shamanId) internal view returns (uint256 createdAt) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get createdAt.
+   */
+  function _getCreatedAt(bytes32 shamanId) internal view returns (uint256 createdAt) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Set createdAt.
+   */
+  function setCreatedAt(bytes32 shamanId, uint256 createdAt) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((createdAt)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set createdAt.
+   */
+  function _setCreatedAt(bytes32 shamanId, uint256 createdAt) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((createdAt)), _fieldLayout);
+  }
+
+  /**
    * @notice Get active.
    */
   function getActive(bytes32 shamanId) internal view returns (bool active) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
-    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -121,7 +165,7 @@ library Shamans {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
-    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
   }
 
@@ -132,7 +176,7 @@ library Shamans {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((active)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((active)), _fieldLayout);
   }
 
   /**
@@ -142,13 +186,57 @@ library Shamans {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((active)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((active)), _fieldLayout);
+  }
+
+  /**
+   * @notice Get balance.
+   */
+  function getBalance(bytes32 shamanId) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Get balance.
+   */
+  function _getBalance(bytes32 shamanId) internal view returns (uint256 balance) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
+    return (uint256(bytes32(_blob)));
+  }
+
+  /**
+   * @notice Set balance.
+   */
+  function setBalance(bytes32 shamanId, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((balance)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set balance.
+   */
+  function _setBalance(bytes32 shamanId, uint256 balance) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((balance)), _fieldLayout);
   }
 
   /**
    * @notice Get the full data.
    */
-  function get(bytes32 shamanId) internal view returns (address creator, bool active) {
+  function get(
+    bytes32 shamanId
+  ) internal view returns (address creator, uint256 createdAt, bool active, uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
@@ -163,7 +251,9 @@ library Shamans {
   /**
    * @notice Get the full data.
    */
-  function _get(bytes32 shamanId) internal view returns (address creator, bool active) {
+  function _get(
+    bytes32 shamanId
+  ) internal view returns (address creator, uint256 createdAt, bool active, uint256 balance) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
@@ -178,8 +268,8 @@ library Shamans {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 shamanId, address creator, bool active) internal {
-    bytes memory _staticData = encodeStatic(creator, active);
+  function set(bytes32 shamanId, address creator, uint256 createdAt, bool active, uint256 balance) internal {
+    bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -193,8 +283,8 @@ library Shamans {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 shamanId, address creator, bool active) internal {
-    bytes memory _staticData = encodeStatic(creator, active);
+  function _set(bytes32 shamanId, address creator, uint256 createdAt, bool active, uint256 balance) internal {
+    bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -208,10 +298,16 @@ library Shamans {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (address creator, bool active) {
+  function decodeStatic(
+    bytes memory _blob
+  ) internal pure returns (address creator, uint256 createdAt, bool active, uint256 balance) {
     creator = (address(Bytes.getBytes20(_blob, 0)));
 
-    active = (_toBool(uint8(Bytes.getBytes1(_blob, 20))));
+    createdAt = (uint256(Bytes.getBytes32(_blob, 20)));
+
+    active = (_toBool(uint8(Bytes.getBytes1(_blob, 52))));
+
+    balance = (uint256(Bytes.getBytes32(_blob, 53)));
   }
 
   /**
@@ -224,8 +320,8 @@ library Shamans {
     bytes memory _staticData,
     EncodedLengths,
     bytes memory
-  ) internal pure returns (address creator, bool active) {
-    (creator, active) = decodeStatic(_staticData);
+  ) internal pure returns (address creator, uint256 createdAt, bool active, uint256 balance) {
+    (creator, createdAt, active, balance) = decodeStatic(_staticData);
   }
 
   /**
@@ -252,8 +348,13 @@ library Shamans {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(address creator, bool active) internal pure returns (bytes memory) {
-    return abi.encodePacked(creator, active);
+  function encodeStatic(
+    address creator,
+    uint256 createdAt,
+    bool active,
+    uint256 balance
+  ) internal pure returns (bytes memory) {
+    return abi.encodePacked(creator, createdAt, active, balance);
   }
 
   /**
@@ -262,8 +363,13 @@ library Shamans {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(address creator, bool active) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(creator, active);
+  function encode(
+    address creator,
+    uint256 createdAt,
+    bool active,
+    uint256 balance
+  ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+    bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;

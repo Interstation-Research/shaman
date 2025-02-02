@@ -64,12 +64,13 @@ contract BaseTest is MudTest, GasReporter {
 
   function _createShaman(
     address creator,
-    uint256 initialDeposit
+    uint256 initialDeposit,
+    string memory metadataURI
   ) internal returns (bytes32 shamanId) {
     vm.recordLogs();
 
     vm.prank(creator);
-    world.createShaman(initialDeposit);
+    world.createShaman(initialDeposit, metadataURI);
     vm.stopPrank();
 
     // Get logs and find the ShamanCreated event

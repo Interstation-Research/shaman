@@ -8,7 +8,12 @@ import { IShamanToken } from "../IShamanToken.sol";
 contract ShamanSystem is BaseSystem {
   event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
 
-  function createShaman(uint256 initialDeposit) public {
+  function createShaman(
+    uint256 initialDeposit,
+    string memory metadataURI
+  ) public {
+    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+
     bytes32 shamanId = keccak256(
       abi.encodePacked(_msgSender(), block.timestamp, block.prevrandao)
     );
@@ -16,6 +21,7 @@ contract ShamanSystem is BaseSystem {
     Shamans.setActive(shamanId, true);
     Shamans.setCreatedAt(shamanId, block.timestamp);
     Shamans.setBalance(shamanId, initialDeposit);
+    Shamans.setMetadataURI(shamanId, metadataURI);
 
     if (initialDeposit > 0) {
       _token().transferFrom(_msgSender(), address(this), initialDeposit);
@@ -31,6 +37,16 @@ contract ShamanSystem is BaseSystem {
     }
 
     emit ShamanCreated(shamanId, _msgSender());
+  }
+
+  function updateShamanMetadata(
+    bytes32 shamanId,
+    string memory metadataURI
+  ) public onlyCreator(shamanId) {
+    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+    require(Shamans.getActive(shamanId), "Shaman is not active");
+
+    Shamans.setMetadataURI(shamanId, metadataURI);
   }
 
   function executeShaman(

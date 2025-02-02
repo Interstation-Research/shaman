@@ -21,12 +21,12 @@ library Shamans {
   ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005368616d616e73000000000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0055040014200120000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0055040114200120000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (address, uint256, bool, uint256)
-  Schema constant _valueSchema = Schema.wrap(0x00550400611f601f000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (address, uint256, bool, uint256, string)
+  Schema constant _valueSchema = Schema.wrap(0x00550401611f601fc50000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -42,11 +42,12 @@ library Shamans {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](4);
+    fieldNames = new string[](5);
     fieldNames[0] = "creator";
     fieldNames[1] = "createdAt";
     fieldNames[2] = "active";
     fieldNames[3] = "balance";
+    fieldNames[4] = "metadataURI";
   }
 
   /**
@@ -232,11 +233,177 @@ library Shamans {
   }
 
   /**
+   * @notice Get metadataURI.
+   */
+  function getMetadataURI(bytes32 shamanId) internal view returns (string memory metadataURI) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get metadataURI.
+   */
+  function _getMetadataURI(bytes32 shamanId) internal view returns (string memory metadataURI) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Set metadataURI.
+   */
+  function setMetadataURI(bytes32 shamanId, string memory metadataURI) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((metadataURI)));
+  }
+
+  /**
+   * @notice Set metadataURI.
+   */
+  function _setMetadataURI(bytes32 shamanId, string memory metadataURI) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((metadataURI)));
+  }
+
+  /**
+   * @notice Get the length of metadataURI.
+   */
+  function lengthMetadataURI(bytes32 shamanId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of metadataURI.
+   */
+  function _lengthMetadataURI(bytes32 shamanId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get an item of metadataURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemMetadataURI(bytes32 shamanId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of metadataURI.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemMetadataURI(bytes32 shamanId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Push a slice to metadataURI.
+   */
+  function pushMetadataURI(bytes32 shamanId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to metadataURI.
+   */
+  function _pushMetadataURI(bytes32 shamanId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Pop a slice from metadataURI.
+   */
+  function popMetadataURI(bytes32 shamanId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from metadataURI.
+   */
+  function _popMetadataURI(bytes32 shamanId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Update a slice of metadataURI at `_index`.
+   */
+  function updateMetadataURI(bytes32 shamanId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of metadataURI at `_index`.
+   */
+  function _updateMetadataURI(bytes32 shamanId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = shamanId;
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get the full data.
    */
   function get(
     bytes32 shamanId
-  ) internal view returns (address creator, uint256 createdAt, bool active, uint256 balance) {
+  )
+    internal
+    view
+    returns (address creator, uint256 createdAt, bool active, uint256 balance, string memory metadataURI)
+  {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
@@ -253,7 +420,11 @@ library Shamans {
    */
   function _get(
     bytes32 shamanId
-  ) internal view returns (address creator, uint256 createdAt, bool active, uint256 balance) {
+  )
+    internal
+    view
+    returns (address creator, uint256 createdAt, bool active, uint256 balance, string memory metadataURI)
+  {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
 
@@ -268,11 +439,18 @@ library Shamans {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(bytes32 shamanId, address creator, uint256 createdAt, bool active, uint256 balance) internal {
+  function set(
+    bytes32 shamanId,
+    address creator,
+    uint256 createdAt,
+    bool active,
+    uint256 balance,
+    string memory metadataURI
+  ) internal {
     bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(metadataURI);
+    bytes memory _dynamicData = encodeDynamic(metadataURI);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
@@ -283,11 +461,18 @@ library Shamans {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(bytes32 shamanId, address creator, uint256 createdAt, bool active, uint256 balance) internal {
+  function _set(
+    bytes32 shamanId,
+    address creator,
+    uint256 createdAt,
+    bool active,
+    uint256 balance,
+    string memory metadataURI
+  ) internal {
     bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(metadataURI);
+    bytes memory _dynamicData = encodeDynamic(metadataURI);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = shamanId;
@@ -311,17 +496,38 @@ library Shamans {
   }
 
   /**
+   * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
+   */
+  function decodeDynamic(
+    EncodedLengths _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (string memory metadataURI) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    metadataURI = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * @notice Decode the tightly packed blobs using this table's field layout.
    * @param _staticData Tightly packed static fields.
-   *
-   *
+   * @param _encodedLengths Encoded lengths of dynamic fields.
+   * @param _dynamicData Tightly packed dynamic fields.
    */
   function decode(
     bytes memory _staticData,
-    EncodedLengths,
-    bytes memory
-  ) internal pure returns (address creator, uint256 createdAt, bool active, uint256 balance) {
+    EncodedLengths _encodedLengths,
+    bytes memory _dynamicData
+  )
+    internal
+    pure
+    returns (address creator, uint256 createdAt, bool active, uint256 balance, string memory metadataURI)
+  {
     (creator, createdAt, active, balance) = decodeStatic(_staticData);
+
+    (metadataURI) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -358,6 +564,25 @@ library Shamans {
   }
 
   /**
+   * @notice Tightly pack dynamic data lengths using this table's schema.
+   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
+   */
+  function encodeLengths(string memory metadataURI) internal pure returns (EncodedLengths _encodedLengths) {
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = EncodedLengthsLib.pack(bytes(metadataURI).length);
+    }
+  }
+
+  /**
+   * @notice Tightly pack dynamic (variable length) data using this table's schema.
+   * @return The dynamic data, encoded into a sequence of bytes.
+   */
+  function encodeDynamic(string memory metadataURI) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((metadataURI)));
+  }
+
+  /**
    * @notice Encode all of a record's fields.
    * @return The static (fixed length) data, encoded into a sequence of bytes.
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
@@ -367,12 +592,13 @@ library Shamans {
     address creator,
     uint256 createdAt,
     bool active,
-    uint256 balance
+    uint256 balance,
+    string memory metadataURI
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(creator, createdAt, active, balance);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(metadataURI);
+    bytes memory _dynamicData = encodeDynamic(metadataURI);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }

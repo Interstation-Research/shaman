@@ -7,18 +7,26 @@ import { Shamans, ShamanLogs } from "../src/codegen/index.sol";
 import { TransactionType } from "../src/codegen/common.sol";
 
 contract ShamanSystemTest is BaseTest {
+  string constant INITIAL_METADATA = "ipfs://QmTest1";
+  string constant UPDATED_METADATA = "ipfs://QmTest2";
+
   function testCreateShaman() public {
     _mintTokens(creatorAlice, 10000 ether);
     _increaseAllowance(creatorAlice, 10000 ether);
 
     // Alice creates a shaman with an initial deposit of 100 $SHAMAN
     uint256 initialDeposit = 100 ether;
-    bytes32 shamanId = _createShaman(creatorAlice, initialDeposit);
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
 
     // Verify the shaman was created
     assertEq(Shamans.getCreator(shamanId), creatorAlice);
     assertEq(Shamans.getActive(shamanId), true);
     assertEq(Shamans.getBalance(shamanId), initialDeposit);
+    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
 
     // Verify the deposit transaction was logged
     bytes32 transactionId = keccak256(
@@ -33,13 +41,93 @@ contract ShamanSystemTest is BaseTest {
     assertEq(ShamanLogs.getSuccess(transactionId), true);
   }
 
+  function testCreateShamanWithEmptyMetadata() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Try to create a shaman with empty metadata
+    vm.prank(creatorAlice);
+    vm.expectRevert("Metadata URI cannot be empty");
+    world.createShaman(100 ether, "");
+    vm.stopPrank();
+  }
+
+  function testUpdateShamanMetadata() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create initial shaman
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Update metadata
+    vm.prank(creatorAlice);
+    world.updateShamanMetadata(shamanId, UPDATED_METADATA);
+    vm.stopPrank();
+
+    // Verify metadata was updated
+    assertEq(Shamans.getMetadataURI(shamanId), UPDATED_METADATA);
+  }
+
+  function testUpdateShamanMetadataOnlyCreator() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create initial shaman
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Try to update metadata as non-creator
+    vm.prank(creatorBob);
+    vm.expectRevert("Not shaman creator");
+    world.updateShamanMetadata(shamanId, UPDATED_METADATA);
+    vm.stopPrank();
+
+    // Verify metadata was not updated
+    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
+  }
+
+  function testUpdateShamanMetadataEmptyURI() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create initial shaman
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Try to update with empty metadata
+    vm.prank(creatorAlice);
+    vm.expectRevert("Metadata URI cannot be empty");
+    world.updateShamanMetadata(shamanId, "");
+    vm.stopPrank();
+
+    // Verify metadata was not updated
+    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
+  }
+
   function testExecuteShaman() public {
     _mintTokens(creatorAlice, 10000 ether);
     _increaseAllowance(creatorAlice, 10000 ether);
 
     // Alice creates a shaman with an initial deposit of 100 $SHAMAN
     uint256 initialDeposit = 100 ether;
-    bytes32 shamanId = _createShaman(creatorAlice, initialDeposit);
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
 
     // Fund the shaman with additional $SHAMAN
     uint256 additionalDeposit = 50 ether;

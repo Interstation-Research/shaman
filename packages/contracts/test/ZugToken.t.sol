@@ -22,7 +22,10 @@ contract ZugTokenTest is Test {
     bob = makeAddr("bob");
 
     vm.startPrank(admin);
-    token = new ZugToken(INITIAL_MAX_SUPPLY, INITIAL_PRICE, treasury);
+    token = new ZugToken(INITIAL_MAX_SUPPLY);
+    token.setTreasury(treasury);
+    token.setPrice(INITIAL_PRICE);
+    token.grantRole(token.MINTER_ROLE(), admin);
     vm.stopPrank();
   }
 
@@ -47,8 +50,13 @@ contract ZugTokenTest is Test {
 
   function testMintingByUnauthorized() public {
     vm.startPrank(alice);
+    bytes32 role = keccak256("MINTER_ROLE");
     vm.expectRevert(
-      "AccessControl: account 0x328809bc894f92807417d2dad6b7c998c1afdac6 is missing role 0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6"
+      abi.encodeWithSignature(
+        "AccessControlUnauthorizedAccount(address,bytes32)",
+        alice,
+        role
+      )
     );
     token.mint(alice, 100 ether);
     vm.stopPrank();
@@ -56,7 +64,7 @@ contract ZugTokenTest is Test {
 
   function testMintingAboveMaxSupply() public {
     vm.startPrank(admin);
-    vm.expectRevert("Mint would exceed max supply");
+    vm.expectRevert("ZugToken: mint would exceed max supply");
     token.mint(alice, INITIAL_MAX_SUPPLY + 1);
     vm.stopPrank();
   }
@@ -76,7 +84,7 @@ contract ZugTokenTest is Test {
     vm.stopPrank();
 
     assertEq(token.balanceOf(alice), amount);
-    assertEq(treasury.balance, cost);
+    assertEq(address(token).balance, cost);
   }
 
   function testBuyingWithInsufficientPayment() public {
@@ -90,7 +98,7 @@ contract ZugTokenTest is Test {
     vm.deal(alice, cost);
 
     vm.startPrank(alice);
-    vm.expectRevert("Insufficient payment");
+    vm.expectRevert("ZugToken: insufficient payment");
     token.buy{ value: cost - 1 }(alice, amount);
     vm.stopPrank();
   }
@@ -102,8 +110,16 @@ contract ZugTokenTest is Test {
     vm.deal(alice, cost);
 
     vm.startPrank(alice);
-    vm.expectRevert("Sale is not active");
+    vm.expectRevert("ZugToken: sale is not active");
     token.buy{ value: cost }(alice, amount);
+    vm.stopPrank();
+  }
+
+  function testBuyingWithoutTreasury() public {
+    vm.startPrank(admin);
+    token.setSaleActive(true);
+    vm.expectRevert("ZugToken: treasury address cannot be zero");
+    token.setTreasury(address(0));
     vm.stopPrank();
   }
 
@@ -118,7 +134,7 @@ contract ZugTokenTest is Test {
     vm.deal(alice, cost);
 
     vm.startPrank(alice);
-    vm.expectRevert("Purchase would exceed max supply");
+    vm.expectRevert("ZugToken: purchase would exceed max supply");
     token.buy{ value: cost }(alice, amount);
     vm.stopPrank();
   }
@@ -135,7 +151,7 @@ contract ZugTokenTest is Test {
 
   function testSettingInvalidPrice() public {
     vm.startPrank(admin);
-    vm.expectRevert("Price must be greater than 0");
+    vm.expectRevert("ZugToken: price must be greater than 0");
     token.setPrice(0);
     vm.stopPrank();
   }
@@ -153,7 +169,7 @@ contract ZugTokenTest is Test {
   function testSettingInvalidMaxSupply() public {
     vm.startPrank(admin);
     token.mint(alice, 100 ether);
-    vm.expectRevert("New max supply below current supply");
+    vm.expectRevert("ZugToken: new max supply below current supply");
     token.setMaxSupply(50 ether);
     vm.stopPrank();
   }
@@ -170,7 +186,14 @@ contract ZugTokenTest is Test {
 
   function testSettingInvalidTreasury() public {
     vm.startPrank(admin);
-    vm.expectRevert("Treasury address cannot be zero");
+    vm.expectRevert("ZugToken: treasury address cannot be zero");
+    token.setTreasury(address(0));
+    vm.stopPrank();
+  }
+
+  function testWithdrawWithoutTreasury() public {
+    vm.startPrank(admin);
+    vm.expectRevert("ZugToken: treasury address cannot be zero");
     token.setTreasury(address(0));
     vm.stopPrank();
   }

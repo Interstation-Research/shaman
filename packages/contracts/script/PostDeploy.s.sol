@@ -27,13 +27,17 @@ contract PostDeploy is Script {
     // Deploy the ZugToken contract
     uint256 maxSupply = 1_000_000 ether; // Example max supply
     uint256 price = 0.01 ether; // Example price per token
-    ZugToken zugToken = new ZugToken(maxSupply, price, treasuryAddress);
+    ZugToken zugToken = new ZugToken(maxSupply);
 
     console.log("ZugToken deployed at:", address(zugToken));
 
-    // Grant roles to the signer address
-    IAccessControl(address(zugToken)).grantRole(MINTER_ROLE, signerAddress);
+    // Initialize ZugToken settings
+    zugToken.setTreasury(treasuryAddress);
+    zugToken.setPrice(price);
+    zugToken.grantRole(MINTER_ROLE, signerAddress);
 
+    console.log("ZugToken treasury set to:", treasuryAddress);
+    console.log("ZugToken price set to:", price);
     console.log("Minter Role granted to signer address:", signerAddress);
 
     // Set the store address to the world address
@@ -49,12 +53,6 @@ contract PostDeploy is Script {
     // Grant operator role to signer address
     console.log("Operator role granted to: %s", signerAddress);
     Roles.setRole(signerAddress, RoleType.Operator);
-
-    // Optionally, initialize other configurations or fixtures here
-    // Example: Set initial token sale parameters
-    // zugToken.setSaleActive(true);
-    // zugToken.setPrice(0.01 ether);
-    // zugToken.setMaxSupply(maxSupply);
 
     vm.stopBroadcast();
   }

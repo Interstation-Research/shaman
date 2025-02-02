@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import "forge-std/console.sol";
 import { BaseTest } from "./BaseTest.t.sol";
-import { Shamans, ShamanTransactions } from "../src/codegen/index.sol";
+import { Shamans, ShamanLogs } from "../src/codegen/index.sol";
 import { TransactionType } from "../src/codegen/common.sol";
 
 contract ShamanSystemTest is BaseTest {
@@ -24,13 +24,13 @@ contract ShamanSystemTest is BaseTest {
     bytes32 transactionId = keccak256(
       abi.encodePacked(shamanId, block.timestamp)
     );
-    assertEq(ShamanTransactions.getShamanId(transactionId), shamanId);
+    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
     assertEq(
-      uint256(ShamanTransactions.getTransactionType(transactionId)),
+      uint256(ShamanLogs.getTransactionType(transactionId)),
       uint256(TransactionType.Deposit)
     );
-    assertEq(ShamanTransactions.getAmount(transactionId), initialDeposit);
-    assertEq(ShamanTransactions.getSuccess(transactionId), true);
+    assertEq(ShamanLogs.getAmount(transactionId), initialDeposit);
+    assertEq(ShamanLogs.getSuccess(transactionId), true);
   }
 
   function testExecuteShaman() public {
@@ -63,12 +63,12 @@ contract ShamanSystemTest is BaseTest {
     bytes32 transactionId = keccak256(
       abi.encodePacked(shamanId, block.timestamp)
     );
-    assertEq(ShamanTransactions.getShamanId(transactionId), shamanId);
+    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
     assertEq(
-      uint256(ShamanTransactions.getTransactionType(transactionId)),
+      uint256(ShamanLogs.getTransactionType(transactionId)),
       uint256(TransactionType.Execute)
     );
-    assertEq(ShamanTransactions.getAmount(transactionId), cost);
-    assertEq(ShamanTransactions.getSuccess(transactionId), true);
+    assertEq(ShamanLogs.getAmount(transactionId), cost);
+    assertEq(ShamanLogs.getSuccess(transactionId), true);
   }
 }

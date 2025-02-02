@@ -19,9 +19,9 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 // Import user types
 import { TransactionType } from "../common.sol";
 
-library ShamanTransactions {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "ShamanTransactio", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005368616d616e5472616e73616374696f);
+library ShamanLogs {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "ShamanLogs", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005368616d616e4c6f6773000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0062050001202001200000000000000000000000000000000000000000000000);

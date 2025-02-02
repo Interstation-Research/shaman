@@ -5,5 +5,5 @@ pragma solidity >=0.8.24;
 
 import { ShamanConfig } from "./tables/ShamanConfig.sol";
 import { Shamans } from "./tables/Shamans.sol";
-import { ShamanTransactions } from "./tables/ShamanTransactions.sol";
+import { ShamanLogs } from "./tables/ShamanLogs.sol";
 import { Roles } from "./tables/Roles.sol";

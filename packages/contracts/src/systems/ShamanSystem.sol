@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { BaseSystem } from "./BaseSystem.sol";
-import { Shamans, ShamanConfig, ShamanTransactions } from "../codegen/index.sol";
+import { Shamans, ShamanConfig, ShamanLogs } from "../codegen/index.sol";
 import { TransactionType } from "../codegen/common.sol";
 import { IShamanToken } from "../IShamanToken.sol";
 
@@ -23,14 +23,11 @@ contract ShamanSystem is BaseSystem {
       bytes32 transactionId = keccak256(
         abi.encodePacked(shamanId, block.timestamp)
       );
-      ShamanTransactions.setShamanId(transactionId, shamanId);
-      ShamanTransactions.setTransactionType(
-        transactionId,
-        TransactionType.Deposit
-      );
-      ShamanTransactions.setAmount(transactionId, initialDeposit);
-      ShamanTransactions.setSuccess(transactionId, true);
-      ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
+      ShamanLogs.setShamanId(transactionId, shamanId);
+      ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
+      ShamanLogs.setAmount(transactionId, initialDeposit);
+      ShamanLogs.setSuccess(transactionId, true);
+      ShamanLogs.setCreatedAt(transactionId, block.timestamp);
     }
 
     emit ShamanCreated(shamanId, _msgSender());
@@ -61,14 +58,11 @@ contract ShamanSystem is BaseSystem {
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) - cost);
 
-    ShamanTransactions.setShamanId(transactionId, shamanId);
-    ShamanTransactions.setTransactionType(
-      transactionId,
-      TransactionType.Execute
-    );
-    ShamanTransactions.setAmount(transactionId, cost);
-    ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
-    ShamanTransactions.setSuccess(transactionId, success);
+    ShamanLogs.setShamanId(transactionId, shamanId);
+    ShamanLogs.setTransactionType(transactionId, TransactionType.Execute);
+    ShamanLogs.setAmount(transactionId, cost);
+    ShamanLogs.setCreatedAt(transactionId, block.timestamp);
+    ShamanLogs.setSuccess(transactionId, success);
 
     // burn $SHAMAN regardless of success
     _token().burn(address(this), cost);
@@ -85,13 +79,10 @@ contract ShamanSystem is BaseSystem {
       abi.encodePacked(shamanId, block.timestamp)
     );
 
-    ShamanTransactions.setShamanId(transactionId, shamanId);
-    ShamanTransactions.setTransactionType(
-      transactionId,
-      TransactionType.Deposit
-    );
-    ShamanTransactions.setAmount(transactionId, amount);
-    ShamanTransactions.setSuccess(transactionId, true);
-    ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
+    ShamanLogs.setShamanId(transactionId, shamanId);
+    ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
+    ShamanLogs.setAmount(transactionId, amount);
+    ShamanLogs.setSuccess(transactionId, true);
+    ShamanLogs.setCreatedAt(transactionId, block.timestamp);
   }
 }

@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { ShamanConfig, Shamans, ShamanTransactions, Roles } from "../src/codegen/index.sol";
+import { ShamanConfig, Shamans, ShamanLogs, Roles } from "../src/codegen/index.sol";
 import { RoleType } from "../src/codegen/common.sol";
 import { IShamanToken } from "../src/IShamanToken.sol";
 

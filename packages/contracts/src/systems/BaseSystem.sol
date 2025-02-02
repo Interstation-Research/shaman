@@ -3,7 +3,7 @@ pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
 import { IShamanToken } from "../IShamanToken.sol";
-import { Shamans, ShamanConfig, ShamanTransactions, Roles } from "../codegen/index.sol";
+import { Shamans, ShamanConfig, Roles } from "../codegen/index.sol";
 import { RoleType } from "../codegen/common.sol";
 
 contract BaseSystem is System {

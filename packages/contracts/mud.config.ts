@@ -28,13 +28,13 @@ export default defineWorld({
       },
       key: ["shamanId"],
     },
-    ShamanTransactions: {
+    ShamanLogs: {
       codegen: {
         dataStruct: false,
       },
       schema: {
         transactionId: "bytes32",
-        transactionType: "TransactionType", // Deposit (+) or Execute (-)
+        transactionType: "TransactionType", // deposit (+) or Execute (-)
         shamanId: "bytes32",
         amount: "uint256", // amount in $SHAMAN
         success: "bool",

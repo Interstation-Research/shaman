@@ -1,14 +1,15 @@
 'use client';
 
 import {
-  Folder,
+  Copy,
   MoreHorizontal,
   Plus,
-  Share,
   Trash2,
+  Zap,
   type LucideIcon,
 } from 'lucide-react';
 
+import Link from 'next/link';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,26 +62,28 @@ export function NavShamans({
                 side={isMobile ? 'bottom' : 'right'}
                 align={isMobile ? 'end' : 'start'}>
                 <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>Activate Shaman</span>
+                  <Zap className="text-muted-foreground" />
+                  <span>Trigger</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <Share className="text-muted-foreground" />
-                  <span>Clone Shaman</span>
+                  <Copy className="text-muted-foreground" />
+                  <span>Clone</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Trash2 className="text-muted-foreground" />
-                  <span>Cancel Shaman</span>
+                  <span>Cancel</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton>
-            <Plus />
-            <span>New Shaman</span>
+          <SidebarMenuButton asChild>
+            <Link href="/new">
+              <Plus />
+              <span>New Shaman</span>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

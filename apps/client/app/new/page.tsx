@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowRight } from 'lucide-react';
+import { Highlight, themes } from 'prism-react-renderer';
+import Link from 'next/link';
 import {
   SidebarInset,
   SidebarProvider,
@@ -50,6 +52,16 @@ const formSchema = z.object({
     message: 'Prompt must be at least 10 characters.',
   }),
 });
+
+const codeBlock = `
+export default async (context: ShamanContext) => {
+  const { fetch } = context;
+  const response = await fetch('https://coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_by_total_volume&per_page=100&page=1&sparkline=false&price_change_percentage=24h&locale=en');
+  const data = await response.json();
+
+  return data;
+}
+`;
 
 export default function Page() {
   const router = useRouter();
@@ -108,10 +120,6 @@ export default function Page() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage>Configure</BreadcrumbPage>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
                   <BreadcrumbPage>Launch</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
@@ -169,13 +177,27 @@ export default function Page() {
                   <CardTitle>Your Shaman</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Quisquam, quos.
-                  </p>
+                  <Highlight
+                    theme={themes.jettwaveLight}
+                    code={codeBlock}
+                    language="tsx">
+                    {({ style, tokens, getLineProps, getTokenProps }) => (
+                      <pre className="overflow-auto w-full p-4" style={style}>
+                        {tokens.map((line, i) => (
+                          <div key={i} {...getLineProps({ line })}>
+                            {line.map((token, key) => (
+                              <span key={key} {...getTokenProps({ token })} />
+                            ))}
+                          </div>
+                        ))}
+                      </pre>
+                    )}
+                  </Highlight>
                 </CardContent>
                 <CardFooter className="flex justify-end mt-auto">
-                  <Button className="w-full">Configure</Button>
+                  <Button className="w-full" asChild>
+                    <Link href="/new/launch">Ready for Launch</Link>
+                  </Button>
                 </CardFooter>
               </Card>
             </div>

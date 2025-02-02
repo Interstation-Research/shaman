@@ -5,10 +5,10 @@ import "forge-std/Test.sol";
 import { MudTest } from "@latticexyz/world/test/MudTest.t.sol";
 import { GasReporter } from "@latticexyz/gas-report/src/GasReporter.sol";
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { ShamanConfig, Shamans, ShamanTransactions, Roles } from "../src/codegen/index.sol";
+import { ShamanConfig, Shamans, Roles } from "../src/codegen/index.sol";
 import { RoleType } from "../src/codegen/common.sol";
-import { IShamanToken } from "../src/IShamanToken.sol";
-
+import { IZugToken } from "../src/IZugToken.sol";
+import { MockContract } from "./mocks/MockContract.sol";
 contract BaseTest is MudTest, GasReporter {
   // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
   uint256 internal deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -20,7 +20,7 @@ contract BaseTest is MudTest, GasReporter {
   IWorld world;
 
   // Contracts
-  IShamanToken shamanToken;
+  IZugToken token;
 
   // Creators
   address creatorAlice;
@@ -35,7 +35,7 @@ contract BaseTest is MudTest, GasReporter {
     world = IWorld(worldAddress);
 
     // Fetch contract addresses from the world
-    shamanToken = IShamanToken(ShamanConfig.getTokenAddress());
+    token = IZugToken(ShamanConfig.getTokenAddress());
 
     // Deploy a mock contract for calldata execution
     mockContract = address(new MockContract());
@@ -52,24 +52,25 @@ contract BaseTest is MudTest, GasReporter {
 
   function _mintTokens(address to, uint256 amount) internal {
     vm.prank(signerAddress);
-    shamanToken.mint(to, amount);
+    token.mint(to, amount);
     vm.stopPrank();
   }
 
   function _increaseAllowance(address creator, uint256 amount) internal {
     vm.prank(creator);
-    shamanToken.approve(worldAddress, amount);
+    token.approve(worldAddress, amount);
     vm.stopPrank();
   }
 
   function _createShaman(
     address creator,
-    uint256 initialDeposit
+    uint256 initialDeposit,
+    string memory metadataURI
   ) internal returns (bytes32 shamanId) {
     vm.recordLogs();
 
     vm.prank(creator);
-    world.createShaman(initialDeposit);
+    world.createShaman(initialDeposit, metadataURI);
     vm.stopPrank();
 
     // Get logs and find the ShamanCreated event
@@ -98,14 +99,5 @@ contract BaseTest is MudTest, GasReporter {
     vm.prank(creator);
     world.fundShaman(shamanId, amount);
     vm.stopPrank();
-  }
-}
-
-// Mock contract for testing calldata execution
-contract MockContract {
-  event MockFunctionCalled(uint256 value);
-
-  function mockFunction(uint256 value) public {
-    emit MockFunctionCalled(value);
   }
 }

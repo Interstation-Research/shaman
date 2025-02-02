@@ -2,8 +2,8 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   enums: {
-    TransactionType: ["Deposit", "Execute"],
-    RoleType: ["None", "Admin"],
+    LogType: ["Deposit", "Refund", "Transaction"],
+    RoleType: ["None", "Operator"],
   },
   tables: {
     ShamanConfig: {
@@ -25,22 +25,23 @@ export default defineWorld({
         createdAt: "uint256",
         active: "bool",
         balance: "uint256", // track $SHAMAN token balance
+        metadataURI: "string", // URL to JSON containing shaman name, prompt, and script
       },
       key: ["shamanId"],
     },
-    ShamanTransactions: {
+    ShamanLogs: {
       codegen: {
         dataStruct: false,
       },
       schema: {
-        transactionId: "bytes32",
-        transactionType: "TransactionType", // Deposit (+) or Execute (-)
+        logId: "bytes32",
+        logType: "LogType", // deposit (+) or execute (-)
         shamanId: "bytes32",
         amount: "uint256", // amount in $SHAMAN
         success: "bool",
         createdAt: "uint256",
       },
-      key: ["transactionId"],
+      key: ["logId"],
     },
     Roles: {
       schema: {

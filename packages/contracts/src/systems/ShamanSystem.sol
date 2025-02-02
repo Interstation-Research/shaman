@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { BaseSystem } from "./BaseSystem.sol";
-import { Shamans, ShamanConfig, ShamanTransactions } from "../codegen/index.sol";
-import { TransactionType } from "../codegen/common.sol";
-import { IShamanToken } from "../IShamanToken.sol";
+import { Shamans, ShamanConfig, ShamanLogs, Roles } from "../codegen/index.sol";
+import { LogType, RoleType } from "../codegen/common.sol";
 
 contract ShamanSystem is BaseSystem {
   event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
 
-  function createShaman(uint256 initialDeposit) public {
+  function createShaman(
+    uint256 initialDeposit,
+    string memory metadataURI
+  ) public {
+    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+
     bytes32 shamanId = keccak256(
       abi.encodePacked(_msgSender(), block.timestamp, block.prevrandao)
     );
@@ -16,24 +20,58 @@ contract ShamanSystem is BaseSystem {
     Shamans.setActive(shamanId, true);
     Shamans.setCreatedAt(shamanId, block.timestamp);
     Shamans.setBalance(shamanId, initialDeposit);
+    Shamans.setMetadataURI(shamanId, metadataURI);
 
     if (initialDeposit > 0) {
       _token().transferFrom(_msgSender(), address(this), initialDeposit);
 
-      bytes32 transactionId = keccak256(
-        abi.encodePacked(shamanId, block.timestamp)
+      bytes32 logId = keccak256(
+        abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
       );
-      ShamanTransactions.setShamanId(transactionId, shamanId);
-      ShamanTransactions.setTransactionType(
-        transactionId,
-        TransactionType.Deposit
-      );
-      ShamanTransactions.setAmount(transactionId, initialDeposit);
-      ShamanTransactions.setSuccess(transactionId, true);
-      ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
+      ShamanLogs.setShamanId(logId, shamanId);
+      ShamanLogs.setLogType(logId, LogType.Deposit);
+      ShamanLogs.setAmount(logId, initialDeposit);
+      ShamanLogs.setSuccess(logId, true);
+      ShamanLogs.setCreatedAt(logId, block.timestamp);
     }
 
     emit ShamanCreated(shamanId, _msgSender());
+  }
+
+  function updateShamanMetadata(
+    bytes32 shamanId,
+    string memory metadataURI
+  ) public onlyCreator(shamanId) {
+    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+    require(Shamans.getActive(shamanId), "Shaman is not active");
+
+    Shamans.setMetadataURI(shamanId, metadataURI);
+  }
+
+  function cancelShaman(bytes32 shamanId) public onlyCreator(shamanId) {
+    require(Shamans.getActive(shamanId), "Shaman is not active");
+
+    uint256 remainingBalance = Shamans.getBalance(shamanId);
+    address creator = Shamans.getCreator(shamanId);
+
+    // Set shaman as inactive
+    Shamans.setActive(shamanId, false);
+
+    // Refund remaining balance to creator if any
+    if (remainingBalance > 0) {
+      Shamans.setBalance(shamanId, 0);
+      _token().transfer(creator, remainingBalance);
+
+      // Log the refund
+      bytes32 logId = keccak256(
+        abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
+      );
+      ShamanLogs.setShamanId(logId, shamanId);
+      ShamanLogs.setLogType(logId, LogType.Refund);
+      ShamanLogs.setAmount(logId, remainingBalance);
+      ShamanLogs.setSuccess(logId, true);
+      ShamanLogs.setCreatedAt(logId, block.timestamp);
+    }
   }
 
   function executeShaman(
@@ -41,7 +79,7 @@ contract ShamanSystem is BaseSystem {
     uint256 cost,
     address target,
     bytes memory data
-  ) public onlyAdmin {
+  ) public onlyOperator {
     require(Shamans.getActive(shamanId), "Shaman is not active");
     require(
       Shamans.getBalance(shamanId) >= cost,
@@ -55,23 +93,20 @@ contract ShamanSystem is BaseSystem {
     // execute the calldata
     (bool success, ) = target.call(data);
 
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
+    bytes32 logId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) - cost);
 
-    ShamanTransactions.setShamanId(transactionId, shamanId);
-    ShamanTransactions.setTransactionType(
-      transactionId,
-      TransactionType.Execute
-    );
-    ShamanTransactions.setAmount(transactionId, cost);
-    ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
-    ShamanTransactions.setSuccess(transactionId, success);
+    ShamanLogs.setShamanId(logId, shamanId);
+    ShamanLogs.setLogType(logId, LogType.Transaction);
+    ShamanLogs.setAmount(logId, cost);
+    ShamanLogs.setCreatedAt(logId, block.timestamp);
+    ShamanLogs.setSuccess(logId, success);
 
-    // burn $SHAMAN regardless of success
-    _token().burn(address(this), cost);
+    // burn $ZUG regardless of success
+    _token().burn(cost);
   }
 
   function fundShaman(bytes32 shamanId, uint256 amount) public {
@@ -81,17 +116,12 @@ contract ShamanSystem is BaseSystem {
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) + amount);
 
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
-    );
+    bytes32 logId = keccak256(abi.encodePacked(shamanId, block.timestamp));
 
-    ShamanTransactions.setShamanId(transactionId, shamanId);
-    ShamanTransactions.setTransactionType(
-      transactionId,
-      TransactionType.Deposit
-    );
-    ShamanTransactions.setAmount(transactionId, amount);
-    ShamanTransactions.setSuccess(transactionId, true);
-    ShamanTransactions.setCreatedAt(transactionId, block.timestamp);
+    ShamanLogs.setShamanId(logId, shamanId);
+    ShamanLogs.setLogType(logId, LogType.Deposit);
+    ShamanLogs.setAmount(logId, amount);
+    ShamanLogs.setSuccess(logId, true);
+    ShamanLogs.setCreatedAt(logId, block.timestamp);
   }
 }

@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Sparkles, LifeBuoy, Send, Webhook } from 'lucide-react';
 
+import Link from 'next/link';
 import { NavShamans } from '@/components/nav-shamans';
 import { NavSecondary } from '@/components/nav-secondary';
 import { NavUser } from '@/components/nav-user';
@@ -50,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Sparkles className="size-4" />
                 </div>
@@ -58,7 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <span className="truncate font-semibold">Shaman</span>
                   <span className="truncate text-xs">Agentic Oracles</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

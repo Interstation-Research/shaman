@@ -17,7 +17,7 @@ import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/Encoded
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
 // Import user types
-import { TransactionType } from "../common.sol";
+import { LogType } from "../common.sol";
 
 library ShamanLogs {
   // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "", name: "ShamanLogs", typeId: RESOURCE_TABLE });`
@@ -37,7 +37,7 @@ library ShamanLogs {
    */
   function getKeyNames() internal pure returns (string[] memory keyNames) {
     keyNames = new string[](1);
-    keyNames[0] = "transactionId";
+    keyNames[0] = "logId";
   }
 
   /**
@@ -46,7 +46,7 @@ library ShamanLogs {
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
     fieldNames = new string[](5);
-    fieldNames[0] = "transactionType";
+    fieldNames[0] = "logType";
     fieldNames[1] = "shamanId";
     fieldNames[2] = "amount";
     fieldNames[3] = "success";
@@ -68,53 +68,53 @@ library ShamanLogs {
   }
 
   /**
-   * @notice Get transactionType.
+   * @notice Get logType.
    */
-  function getTransactionType(bytes32 transactionId) internal view returns (TransactionType transactionType) {
+  function getLogType(bytes32 logId) internal view returns (LogType logType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return TransactionType(uint8(bytes1(_blob)));
+    return LogType(uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Get transactionType.
+   * @notice Get logType.
    */
-  function _getTransactionType(bytes32 transactionId) internal view returns (TransactionType transactionType) {
+  function _getLogType(bytes32 logId) internal view returns (LogType logType) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 0, _fieldLayout);
-    return TransactionType(uint8(bytes1(_blob)));
+    return LogType(uint8(bytes1(_blob)));
   }
 
   /**
-   * @notice Set transactionType.
+   * @notice Set logType.
    */
-  function setTransactionType(bytes32 transactionId, TransactionType transactionType) internal {
+  function setLogType(bytes32 logId, LogType logType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
-    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(transactionType)), _fieldLayout);
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(logType)), _fieldLayout);
   }
 
   /**
-   * @notice Set transactionType.
+   * @notice Set logType.
    */
-  function _setTransactionType(bytes32 transactionId, TransactionType transactionType) internal {
+  function _setLogType(bytes32 logId, LogType logType) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
-    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(transactionType)), _fieldLayout);
+    StoreCore.setStaticField(_tableId, _keyTuple, 0, abi.encodePacked(uint8(logType)), _fieldLayout);
   }
 
   /**
    * @notice Get shamanId.
    */
-  function getShamanId(bytes32 transactionId) internal view returns (bytes32 shamanId) {
+  function getShamanId(bytes32 logId) internal view returns (bytes32 shamanId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (bytes32(_blob));
@@ -123,9 +123,9 @@ library ShamanLogs {
   /**
    * @notice Get shamanId.
    */
-  function _getShamanId(bytes32 transactionId) internal view returns (bytes32 shamanId) {
+  function _getShamanId(bytes32 logId) internal view returns (bytes32 shamanId) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 1, _fieldLayout);
     return (bytes32(_blob));
@@ -134,9 +134,9 @@ library ShamanLogs {
   /**
    * @notice Set shamanId.
    */
-  function setShamanId(bytes32 transactionId, bytes32 shamanId) internal {
+  function setShamanId(bytes32 logId, bytes32 shamanId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((shamanId)), _fieldLayout);
   }
@@ -144,9 +144,9 @@ library ShamanLogs {
   /**
    * @notice Set shamanId.
    */
-  function _setShamanId(bytes32 transactionId, bytes32 shamanId) internal {
+  function _setShamanId(bytes32 logId, bytes32 shamanId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 1, abi.encodePacked((shamanId)), _fieldLayout);
   }
@@ -154,9 +154,9 @@ library ShamanLogs {
   /**
    * @notice Get amount.
    */
-  function getAmount(bytes32 transactionId) internal view returns (uint256 amount) {
+  function getAmount(bytes32 logId) internal view returns (uint256 amount) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -165,9 +165,9 @@ library ShamanLogs {
   /**
    * @notice Get amount.
    */
-  function _getAmount(bytes32 transactionId) internal view returns (uint256 amount) {
+  function _getAmount(bytes32 logId) internal view returns (uint256 amount) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -176,9 +176,9 @@ library ShamanLogs {
   /**
    * @notice Set amount.
    */
-  function setAmount(bytes32 transactionId, uint256 amount) internal {
+  function setAmount(bytes32 logId, uint256 amount) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((amount)), _fieldLayout);
   }
@@ -186,9 +186,9 @@ library ShamanLogs {
   /**
    * @notice Set amount.
    */
-  function _setAmount(bytes32 transactionId, uint256 amount) internal {
+  function _setAmount(bytes32 logId, uint256 amount) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((amount)), _fieldLayout);
   }
@@ -196,9 +196,9 @@ library ShamanLogs {
   /**
    * @notice Get success.
    */
-  function getSuccess(bytes32 transactionId) internal view returns (bool success) {
+  function getSuccess(bytes32 logId) internal view returns (bool success) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -207,9 +207,9 @@ library ShamanLogs {
   /**
    * @notice Get success.
    */
-  function _getSuccess(bytes32 transactionId) internal view returns (bool success) {
+  function _getSuccess(bytes32 logId) internal view returns (bool success) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 3, _fieldLayout);
     return (_toBool(uint8(bytes1(_blob))));
@@ -218,9 +218,9 @@ library ShamanLogs {
   /**
    * @notice Set success.
    */
-  function setSuccess(bytes32 transactionId, bool success) internal {
+  function setSuccess(bytes32 logId, bool success) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((success)), _fieldLayout);
   }
@@ -228,9 +228,9 @@ library ShamanLogs {
   /**
    * @notice Set success.
    */
-  function _setSuccess(bytes32 transactionId, bool success) internal {
+  function _setSuccess(bytes32 logId, bool success) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 3, abi.encodePacked((success)), _fieldLayout);
   }
@@ -238,9 +238,9 @@ library ShamanLogs {
   /**
    * @notice Get createdAt.
    */
-  function getCreatedAt(bytes32 transactionId) internal view returns (uint256 createdAt) {
+  function getCreatedAt(bytes32 logId) internal view returns (uint256 createdAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -249,9 +249,9 @@ library ShamanLogs {
   /**
    * @notice Get createdAt.
    */
-  function _getCreatedAt(bytes32 transactionId) internal view returns (uint256 createdAt) {
+  function _getCreatedAt(bytes32 logId) internal view returns (uint256 createdAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 4, _fieldLayout);
     return (uint256(bytes32(_blob)));
@@ -260,9 +260,9 @@ library ShamanLogs {
   /**
    * @notice Set createdAt.
    */
-  function setCreatedAt(bytes32 transactionId, uint256 createdAt) internal {
+  function setCreatedAt(bytes32 logId, uint256 createdAt) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((createdAt)), _fieldLayout);
   }
@@ -270,9 +270,9 @@ library ShamanLogs {
   /**
    * @notice Set createdAt.
    */
-  function _setCreatedAt(bytes32 transactionId, uint256 createdAt) internal {
+  function _setCreatedAt(bytes32 logId, uint256 createdAt) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.setStaticField(_tableId, _keyTuple, 4, abi.encodePacked((createdAt)), _fieldLayout);
   }
@@ -281,14 +281,10 @@ library ShamanLogs {
    * @notice Get the full data.
    */
   function get(
-    bytes32 transactionId
-  )
-    internal
-    view
-    returns (TransactionType transactionType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt)
-  {
+    bytes32 logId
+  ) internal view returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreSwitch.getRecord(
       _tableId,
@@ -302,14 +298,10 @@ library ShamanLogs {
    * @notice Get the full data.
    */
   function _get(
-    bytes32 transactionId
-  )
-    internal
-    view
-    returns (TransactionType transactionType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt)
-  {
+    bytes32 logId
+  ) internal view returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     (bytes memory _staticData, EncodedLengths _encodedLengths, bytes memory _dynamicData) = StoreCore.getRecord(
       _tableId,
@@ -323,20 +315,20 @@ library ShamanLogs {
    * @notice Set the full data using individual values.
    */
   function set(
-    bytes32 transactionId,
-    TransactionType transactionType,
+    bytes32 logId,
+    LogType logType,
     bytes32 shamanId,
     uint256 amount,
     bool success,
     uint256 createdAt
   ) internal {
-    bytes memory _staticData = encodeStatic(transactionType, shamanId, amount, success, createdAt);
+    bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData);
   }
@@ -345,20 +337,20 @@ library ShamanLogs {
    * @notice Set the full data using individual values.
    */
   function _set(
-    bytes32 transactionId,
-    TransactionType transactionType,
+    bytes32 logId,
+    LogType logType,
     bytes32 shamanId,
     uint256 amount,
     bool success,
     uint256 createdAt
   ) internal {
-    bytes memory _staticData = encodeStatic(transactionType, shamanId, amount, success, createdAt);
+    bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
 
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.setRecord(_tableId, _keyTuple, _staticData, _encodedLengths, _dynamicData, _fieldLayout);
   }
@@ -368,12 +360,8 @@ library ShamanLogs {
    */
   function decodeStatic(
     bytes memory _blob
-  )
-    internal
-    pure
-    returns (TransactionType transactionType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt)
-  {
-    transactionType = TransactionType(uint8(Bytes.getBytes1(_blob, 0)));
+  ) internal pure returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
+    logType = LogType(uint8(Bytes.getBytes1(_blob, 0)));
 
     shamanId = (Bytes.getBytes32(_blob, 1));
 
@@ -394,20 +382,16 @@ library ShamanLogs {
     bytes memory _staticData,
     EncodedLengths,
     bytes memory
-  )
-    internal
-    pure
-    returns (TransactionType transactionType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt)
-  {
-    (transactionType, shamanId, amount, success, createdAt) = decodeStatic(_staticData);
+  ) internal pure returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
+    (logType, shamanId, amount, success, createdAt) = decodeStatic(_staticData);
   }
 
   /**
    * @notice Delete all data for given keys.
    */
-  function deleteRecord(bytes32 transactionId) internal {
+  function deleteRecord(bytes32 logId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreSwitch.deleteRecord(_tableId, _keyTuple);
   }
@@ -415,9 +399,9 @@ library ShamanLogs {
   /**
    * @notice Delete all data for given keys.
    */
-  function _deleteRecord(bytes32 transactionId) internal {
+  function _deleteRecord(bytes32 logId) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     StoreCore.deleteRecord(_tableId, _keyTuple, _fieldLayout);
   }
@@ -427,13 +411,13 @@ library ShamanLogs {
    * @return The static data, encoded into a sequence of bytes.
    */
   function encodeStatic(
-    TransactionType transactionType,
+    LogType logType,
     bytes32 shamanId,
     uint256 amount,
     bool success,
     uint256 createdAt
   ) internal pure returns (bytes memory) {
-    return abi.encodePacked(transactionType, shamanId, amount, success, createdAt);
+    return abi.encodePacked(logType, shamanId, amount, success, createdAt);
   }
 
   /**
@@ -443,13 +427,13 @@ library ShamanLogs {
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
   function encode(
-    TransactionType transactionType,
+    LogType logType,
     bytes32 shamanId,
     uint256 amount,
     bool success,
     uint256 createdAt
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(transactionType, shamanId, amount, success, createdAt);
+    bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -460,9 +444,9 @@ library ShamanLogs {
   /**
    * @notice Encode keys as a bytes32 array using this table's field layout.
    */
-  function encodeKeyTuple(bytes32 transactionId) internal pure returns (bytes32[] memory) {
+  function encodeKeyTuple(bytes32 logId) internal pure returns (bytes32[] memory) {
     bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = transactionId;
+    _keyTuple[0] = logId;
 
     return _keyTuple;
   }

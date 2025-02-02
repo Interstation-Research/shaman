@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 import { BaseSystem } from "./BaseSystem.sol";
 import { Shamans, ShamanConfig, ShamanLogs, Roles } from "../codegen/index.sol";
-import { TransactionType, RoleType } from "../codegen/common.sol";
+import { LogType, RoleType } from "../codegen/common.sol";
 
 contract ShamanSystem is BaseSystem {
   event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
@@ -25,14 +25,14 @@ contract ShamanSystem is BaseSystem {
     if (initialDeposit > 0) {
       _token().transferFrom(_msgSender(), address(this), initialDeposit);
 
-      bytes32 transactionId = keccak256(
-        abi.encodePacked(shamanId, block.timestamp)
+      bytes32 logId = keccak256(
+        abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
       );
-      ShamanLogs.setShamanId(transactionId, shamanId);
-      ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
-      ShamanLogs.setAmount(transactionId, initialDeposit);
-      ShamanLogs.setSuccess(transactionId, true);
-      ShamanLogs.setCreatedAt(transactionId, block.timestamp);
+      ShamanLogs.setShamanId(logId, shamanId);
+      ShamanLogs.setLogType(logId, LogType.Deposit);
+      ShamanLogs.setAmount(logId, initialDeposit);
+      ShamanLogs.setSuccess(logId, true);
+      ShamanLogs.setCreatedAt(logId, block.timestamp);
     }
 
     emit ShamanCreated(shamanId, _msgSender());
@@ -63,14 +63,14 @@ contract ShamanSystem is BaseSystem {
       _token().transfer(creator, remainingBalance);
 
       // Log the refund
-      bytes32 transactionId = keccak256(
-        abi.encodePacked(shamanId, block.timestamp)
+      bytes32 logId = keccak256(
+        abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
       );
-      ShamanLogs.setShamanId(transactionId, shamanId);
-      ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
-      ShamanLogs.setAmount(transactionId, remainingBalance);
-      ShamanLogs.setSuccess(transactionId, true);
-      ShamanLogs.setCreatedAt(transactionId, block.timestamp);
+      ShamanLogs.setShamanId(logId, shamanId);
+      ShamanLogs.setLogType(logId, LogType.Refund);
+      ShamanLogs.setAmount(logId, remainingBalance);
+      ShamanLogs.setSuccess(logId, true);
+      ShamanLogs.setCreatedAt(logId, block.timestamp);
     }
   }
 
@@ -93,17 +93,17 @@ contract ShamanSystem is BaseSystem {
     // execute the calldata
     (bool success, ) = target.call(data);
 
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
+    bytes32 logId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) - cost);
 
-    ShamanLogs.setShamanId(transactionId, shamanId);
-    ShamanLogs.setTransactionType(transactionId, TransactionType.Execute);
-    ShamanLogs.setAmount(transactionId, cost);
-    ShamanLogs.setCreatedAt(transactionId, block.timestamp);
-    ShamanLogs.setSuccess(transactionId, success);
+    ShamanLogs.setShamanId(logId, shamanId);
+    ShamanLogs.setLogType(logId, LogType.Transaction);
+    ShamanLogs.setAmount(logId, cost);
+    ShamanLogs.setCreatedAt(logId, block.timestamp);
+    ShamanLogs.setSuccess(logId, success);
 
     // burn $ZUG regardless of success
     _token().burn(cost);
@@ -116,14 +116,12 @@ contract ShamanSystem is BaseSystem {
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) + amount);
 
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
-    );
+    bytes32 logId = keccak256(abi.encodePacked(shamanId, block.timestamp));
 
-    ShamanLogs.setShamanId(transactionId, shamanId);
-    ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
-    ShamanLogs.setAmount(transactionId, amount);
-    ShamanLogs.setSuccess(transactionId, true);
-    ShamanLogs.setCreatedAt(transactionId, block.timestamp);
+    ShamanLogs.setShamanId(logId, shamanId);
+    ShamanLogs.setLogType(logId, LogType.Deposit);
+    ShamanLogs.setAmount(logId, amount);
+    ShamanLogs.setSuccess(logId, true);
+    ShamanLogs.setCreatedAt(logId, block.timestamp);
   }
 }

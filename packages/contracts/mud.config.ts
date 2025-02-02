@@ -2,7 +2,7 @@ import { defineWorld } from "@latticexyz/world";
 
 export default defineWorld({
   enums: {
-    TransactionType: ["Deposit", "Execute"],
+    LogType: ["Deposit", "Refund", "Transaction"],
     RoleType: ["None", "Operator"],
   },
   tables: {
@@ -34,14 +34,14 @@ export default defineWorld({
         dataStruct: false,
       },
       schema: {
-        transactionId: "bytes32",
-        transactionType: "TransactionType", // deposit (+) or Execute (-)
+        logId: "bytes32",
+        logType: "LogType", // deposit (+) or execute (-)
         shamanId: "bytes32",
         amount: "uint256", // amount in $SHAMAN
         success: "bool",
         createdAt: "uint256",
       },
-      key: ["transactionId"],
+      key: ["logId"],
     },
     Roles: {
       schema: {

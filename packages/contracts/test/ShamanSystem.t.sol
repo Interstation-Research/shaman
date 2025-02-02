@@ -4,7 +4,7 @@ pragma solidity >=0.8.24;
 import "forge-std/console.sol";
 import { BaseTest } from "./BaseTest.t.sol";
 import { Shamans, ShamanLogs } from "../src/codegen/index.sol";
-import { TransactionType } from "../src/codegen/common.sol";
+import { LogType } from "../src/codegen/common.sol";
 
 contract ShamanSystemTest is BaseTest {
   string constant INITIAL_METADATA = "ipfs://QmTest1";
@@ -29,16 +29,13 @@ contract ShamanSystemTest is BaseTest {
     assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
 
     // Verify the deposit transaction was logged
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
+    bytes32 logId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
-    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
-    assertEq(
-      uint256(ShamanLogs.getTransactionType(transactionId)),
-      uint256(TransactionType.Deposit)
-    );
-    assertEq(ShamanLogs.getAmount(transactionId), initialDeposit);
-    assertEq(ShamanLogs.getSuccess(transactionId), true);
+    assertEq(ShamanLogs.getShamanId(logId), shamanId);
+    assertEq(uint256(ShamanLogs.getLogType(logId)), uint256(LogType.Deposit));
+    assertEq(ShamanLogs.getAmount(logId), initialDeposit);
+    assertEq(ShamanLogs.getSuccess(logId), true);
   }
 
   function testCreateShamanWithEmptyMetadata() public {
@@ -148,16 +145,16 @@ contract ShamanSystemTest is BaseTest {
     );
 
     // Verify the execute transaction was logged
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
+    bytes32 logId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
-    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
+    assertEq(ShamanLogs.getShamanId(logId), shamanId);
     assertEq(
-      uint256(ShamanLogs.getTransactionType(transactionId)),
-      uint256(TransactionType.Execute)
+      uint256(ShamanLogs.getLogType(logId)),
+      uint256(LogType.Transaction)
     );
-    assertEq(ShamanLogs.getAmount(transactionId), cost);
-    assertEq(ShamanLogs.getSuccess(transactionId), true);
+    assertEq(ShamanLogs.getAmount(logId), cost);
+    assertEq(ShamanLogs.getSuccess(logId), true);
   }
 
   function testCancelShamanByCreator() public {
@@ -190,16 +187,13 @@ contract ShamanSystemTest is BaseTest {
     );
 
     // Verify refund was logged
-    bytes32 transactionId = keccak256(
-      abi.encodePacked(shamanId, block.timestamp)
+    bytes32 logId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
-    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
-    assertEq(
-      uint256(ShamanLogs.getTransactionType(transactionId)),
-      uint256(TransactionType.Deposit)
-    );
-    assertEq(ShamanLogs.getAmount(transactionId), initialDeposit);
-    assertEq(ShamanLogs.getSuccess(transactionId), true);
+    assertEq(ShamanLogs.getShamanId(logId), shamanId);
+    assertEq(uint256(ShamanLogs.getLogType(logId)), uint256(LogType.Refund));
+    assertEq(ShamanLogs.getAmount(logId), initialDeposit);
+    assertEq(ShamanLogs.getSuccess(logId), true);
   }
 
   function testCancelShamanUnauthorized() public {

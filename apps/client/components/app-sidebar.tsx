@@ -1,83 +1,80 @@
-import * as React from 'react';
+'use client';
 
-import { Button } from './ui/button';
-import { TokenBalance } from './token-balance';
-import { Separator } from './ui/separator';
+import * as React from 'react';
+import { Sparkles, LifeBuoy, Send, Webhook, DollarSign } from 'lucide-react';
+
+import { NavShamans } from '@/components/nav-shamans';
+import { NavSecondary } from '@/components/nav-secondary';
+import { NavUser } from '@/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
 } from '@/components/ui/sidebar';
 
 const data = {
-  navMain: [
+  user: {
+    name: 'shadcn',
+    email: 'm@example.com',
+    avatar: '/avatars/shadcn.jpg',
+  },
+  navSecondary: [
     {
-      title: 'Your Shamans',
+      title: 'Balance: 0 $ZUG',
       url: '#',
-      items: [
-        {
-          title: 'Zug Zug',
-          url: '#',
-          isActive: true,
-        },
-      ],
+      icon: DollarSign,
+    },
+    {
+      title: 'Support',
+      url: '#',
+      icon: LifeBuoy,
+    },
+    {
+      title: 'Feedback',
+      url: '#',
+      icon: Send,
+    },
+  ],
+  projects: [
+    {
+      name: 'Zug',
+      url: '#',
+      icon: Webhook,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props}>
+    <Sidebar variant="inset" {...props}>
       <SidebarHeader>
-        <h1 className="scroll-m-20 text-center text-lg tracking-tight my-2">
-          Shaman
-        </h1>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <a href="#">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <Sparkles className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Shaman</span>
+                  <span className="truncate text-xs">Agentic Oracles</span>
+                </div>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <TokenBalance />
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <Separator />
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <Button className="w-full">New Shaman</Button>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <NavShamans projects={data.projects} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <div className="mt-auto">
-        <Separator />
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <Button className="w-full">Connect Wallet</Button>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </div>
-      <SidebarRail />
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
     </Sidebar>
   );
 }

@@ -8,6 +8,9 @@ import { TransactionType } from "../src/codegen/common.sol";
 
 contract ShamanSystemTest is BaseTest {
   function testCreateShaman() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
     // Alice creates a shaman with an initial deposit of 100 $SHAMAN
     uint256 initialDeposit = 100 ether;
     bytes32 shamanId = _createShaman(creatorAlice, initialDeposit);
@@ -31,6 +34,9 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testExecuteShaman() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
     // Alice creates a shaman with an initial deposit of 100 $SHAMAN
     uint256 initialDeposit = 100 ether;
     bytes32 shamanId = _createShaman(creatorAlice, initialDeposit);

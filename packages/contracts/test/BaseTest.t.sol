@@ -48,27 +48,17 @@ contract BaseTest is MudTest, GasReporter {
     console.log("Creator Alice:", creatorAlice);
     console.log("Creator Bob:", creatorBob);
     console.log("Creator Charlie:", creatorCharlie);
+  }
 
-    // Mint $SHAMAN tokens to the creators
-    uint256 initialBalance = 1000 ether;
-    // Admin mints tokens
+  function _mintTokens(address to, uint256 amount) internal {
     vm.prank(signerAddress);
-    shamanToken.mint(creatorAlice, initialBalance);
-    shamanToken.mint(creatorBob, initialBalance);
-    shamanToken.mint(creatorCharlie, initialBalance);
+    shamanToken.mint(to, amount);
     vm.stopPrank();
+  }
 
-    // Approve the ShamanSystem to spend tokens on behalf of the creators
-    vm.prank(creatorAlice);
-    shamanToken.approve(address(world), type(uint256).max);
-    vm.stopPrank();
-
-    vm.prank(creatorBob);
-    shamanToken.approve(address(world), type(uint256).max);
-    vm.stopPrank();
-
-    vm.prank(creatorCharlie);
-    shamanToken.approve(address(world), type(uint256).max);
+  function _increaseAllowance(address creator, uint256 amount) internal {
+    vm.prank(creator);
+    shamanToken.approve(worldAddress, amount);
     vm.stopPrank();
   }
 
@@ -76,21 +66,28 @@ contract BaseTest is MudTest, GasReporter {
     address creator,
     uint256 initialDeposit
   ) internal returns (bytes32 shamanId) {
+    vm.recordLogs();
+
     vm.prank(creator);
     world.createShaman(initialDeposit);
     vm.stopPrank();
 
-    // Retrieve the shamanId from the event
-    vm.recordLogs();
-    world.createShaman(initialDeposit);
+    // Get logs and find the ShamanCreated event
     Vm.Log[] memory entries = vm.getRecordedLogs();
     for (uint256 i = 0; i < entries.length; i++) {
+      // Check if this is our event
       if (entries[i].topics[0] == keccak256("ShamanCreated(bytes32,address)")) {
-        shamanId = abi.decode(entries[i].data, (bytes32));
+        // For indexed parameters, they appear in topics
+        // topics[0] is the event signature
+        // topics[1] is the first indexed parameter (shamanId)
+        shamanId = bytes32(entries[i].topics[1]);
         break;
       }
     }
     require(shamanId != bytes32(0), "Shaman creation failed");
+
+    // Optional: Add debug logging
+    console.log("Created shaman with ID:", uint256(shamanId));
   }
 
   function _fundShaman(

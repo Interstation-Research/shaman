@@ -18,10 +18,7 @@ contract ShamanSystem is BaseSystem {
     Shamans.setBalance(shamanId, initialDeposit);
 
     if (initialDeposit > 0) {
-      require(
-        _token().transferFrom(_msgSender(), address(this), initialDeposit),
-        "Transfer failed"
-      );
+      _token().transferFrom(_msgSender(), address(this), initialDeposit);
 
       bytes32 transactionId = keccak256(
         abi.encodePacked(shamanId, block.timestamp)
@@ -79,10 +76,8 @@ contract ShamanSystem is BaseSystem {
 
   function fundShaman(bytes32 shamanId, uint256 amount) public {
     require(Shamans.getActive(shamanId), "Shaman is not active");
-    require(
-      _token().transferFrom(_msgSender(), address(this), amount),
-      "Transfer failed"
-    );
+    require(amount > 0, "Amount must be greater than 0");
+    _token().transferFrom(_msgSender(), address(this), amount);
 
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) + amount);
 

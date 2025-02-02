@@ -62,16 +62,16 @@ export function NavShamans({
                 align={isMobile ? 'end' : 'start'}>
                 <DropdownMenuItem>
                   <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
+                  <span>Activate Shaman</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Share className="text-muted-foreground" />
-                  <span>Share Project</span>
+                  <span>Clone Shaman</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                  <span>Cancel Shaman</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sparkles, LifeBuoy, Send, Webhook, DollarSign } from 'lucide-react';
+import { Sparkles, LifeBuoy, Send, Webhook } from 'lucide-react';
 
 import { NavShamans } from '@/components/nav-shamans';
 import { NavSecondary } from '@/components/nav-secondary';
@@ -18,16 +18,11 @@ import {
 
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
+    name: '0xabcd...xyxz',
+    email: 'Balance: 0 $ZUG',
     avatar: '/avatars/shadcn.jpg',
   },
   navSecondary: [
-    {
-      title: 'Balance: 0 $ZUG',
-      url: '#',
-      icon: DollarSign,
-    },
     {
       title: 'Support',
       url: '#',

@@ -3,7 +3,7 @@ import { defineWorld } from "@latticexyz/world";
 export default defineWorld({
   enums: {
     TransactionType: ["Deposit", "Execute"],
-    RoleType: ["None", "Admin"],
+    RoleType: ["None", "Operator"],
   },
   tables: {
     ShamanConfig: {

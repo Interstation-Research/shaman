@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.24;
 import { BaseSystem } from "./BaseSystem.sol";
-import { Shamans, ShamanConfig, ShamanLogs } from "../codegen/index.sol";
-import { TransactionType } from "../codegen/common.sol";
+import { Shamans, ShamanConfig, ShamanLogs, Roles } from "../codegen/index.sol";
+import { TransactionType, RoleType } from "../codegen/common.sol";
 import { IShamanToken } from "../IShamanToken.sol";
 
 contract ShamanSystem is BaseSystem {
@@ -49,12 +49,38 @@ contract ShamanSystem is BaseSystem {
     Shamans.setMetadataURI(shamanId, metadataURI);
   }
 
+  function cancelShaman(bytes32 shamanId) public onlyCreator(shamanId) {
+    require(Shamans.getActive(shamanId), "Shaman is not active");
+
+    uint256 remainingBalance = Shamans.getBalance(shamanId);
+    address creator = Shamans.getCreator(shamanId);
+
+    // Set shaman as inactive
+    Shamans.setActive(shamanId, false);
+
+    // Refund remaining balance to creator if any
+    if (remainingBalance > 0) {
+      Shamans.setBalance(shamanId, 0);
+      _token().transfer(creator, remainingBalance);
+
+      // Log the refund
+      bytes32 transactionId = keccak256(
+        abi.encodePacked(shamanId, block.timestamp)
+      );
+      ShamanLogs.setShamanId(transactionId, shamanId);
+      ShamanLogs.setTransactionType(transactionId, TransactionType.Deposit);
+      ShamanLogs.setAmount(transactionId, remainingBalance);
+      ShamanLogs.setSuccess(transactionId, true);
+      ShamanLogs.setCreatedAt(transactionId, block.timestamp);
+    }
+  }
+
   function executeShaman(
     bytes32 shamanId,
     uint256 cost,
     address target,
     bytes memory data
-  ) public onlyAdmin {
+  ) public onlyOperator {
     require(Shamans.getActive(shamanId), "Shaman is not active");
     require(
       Shamans.getBalance(shamanId) >= cost,

@@ -50,10 +50,9 @@ contract PostDeploy is Script {
 
     console.log("ShamanConfig token address set to:", address(shamanToken));
 
-    // Set up roles (e.g., Admin)
-    Roles.setRole(signerAddress, RoleType.Admin);
-
-    console.log("Admin role granted to:", signerAddress);
+    // Grant operator role to signer address
+    console.log("Operator role granted to: %s", signerAddress);
+    Roles.setRole(signerAddress, RoleType.Operator);
 
     // Optionally, initialize other configurations or fixtures here
     // Example: Set initial token sale parameters

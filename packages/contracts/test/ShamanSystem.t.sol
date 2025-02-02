@@ -134,10 +134,10 @@ contract ShamanSystemTest is BaseTest {
     _fundShaman(creatorAlice, shamanId, additionalDeposit);
 
     // Execute a transaction on the mock contract
-    bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42); // Call mockFunction with value 42
+    bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42);
     uint256 cost = 10 ether;
 
-    vm.prank(signerAddress); // Admin executes the transaction
+    vm.prank(signerAddress); // Operator executes the transaction
     world.executeShaman(shamanId, cost, mockContract, data);
     vm.stopPrank();
 
@@ -158,5 +158,115 @@ contract ShamanSystemTest is BaseTest {
     );
     assertEq(ShamanLogs.getAmount(transactionId), cost);
     assertEq(ShamanLogs.getSuccess(transactionId), true);
+  }
+
+  function testCancelShamanByCreator() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create shaman with initial deposit
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Cancel shaman as creator
+    uint256 creatorBalanceBefore = shamanToken.balanceOf(creatorAlice);
+
+    vm.prank(creatorAlice);
+    world.cancelShaman(shamanId);
+    vm.stopPrank();
+
+    // Verify shaman is inactive
+    assertEq(Shamans.getActive(shamanId), false);
+
+    // Verify balance was refunded
+    assertEq(Shamans.getBalance(shamanId), 0);
+    assertEq(
+      shamanToken.balanceOf(creatorAlice),
+      creatorBalanceBefore + initialDeposit
+    );
+
+    // Verify refund was logged
+    bytes32 transactionId = keccak256(
+      abi.encodePacked(shamanId, block.timestamp)
+    );
+    assertEq(ShamanLogs.getShamanId(transactionId), shamanId);
+    assertEq(
+      uint256(ShamanLogs.getTransactionType(transactionId)),
+      uint256(TransactionType.Deposit)
+    );
+    assertEq(ShamanLogs.getAmount(transactionId), initialDeposit);
+    assertEq(ShamanLogs.getSuccess(transactionId), true);
+  }
+
+  function testCancelShamanUnauthorized() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create shaman with initial deposit
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Try to cancel shaman as unauthorized user
+    vm.prank(creatorBob);
+    vm.expectRevert("Not shaman creator");
+    world.cancelShaman(shamanId);
+    vm.stopPrank();
+
+    // Verify shaman is still active
+    assertEq(Shamans.getActive(shamanId), true);
+    assertEq(Shamans.getBalance(shamanId), initialDeposit);
+  }
+
+  function testCancelInactiveShaman() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create and cancel shaman
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    vm.prank(creatorAlice);
+    world.cancelShaman(shamanId);
+    vm.stopPrank();
+
+    // Try to cancel again
+    vm.prank(creatorAlice);
+    vm.expectRevert("Shaman is not active");
+    world.cancelShaman(shamanId);
+    vm.stopPrank();
+  }
+
+  function testExecuteShamanUnauthorized() public {
+    _mintTokens(creatorAlice, 10000 ether);
+    _increaseAllowance(creatorAlice, 10000 ether);
+
+    // Create shaman
+    uint256 initialDeposit = 100 ether;
+    bytes32 shamanId = _createShaman(
+      creatorAlice,
+      initialDeposit,
+      INITIAL_METADATA
+    );
+
+    // Try to execute as non-operator
+    bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42);
+    uint256 cost = 10 ether;
+
+    vm.prank(creatorBob);
+    vm.expectRevert("Not operator");
+    world.executeShaman(shamanId, cost, mockContract, data);
+    vm.stopPrank();
   }
 }

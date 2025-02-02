@@ -17,6 +17,7 @@
       "systemId": "0x737900000000000000000000000000005368616d616e53797374656d00000000",
       "abi": [
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
+        "function cancelShaman(bytes32 shamanId)",
         "function createShaman(uint256 initialDeposit, string metadataURI)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
         "function fundShaman(bytes32 shamanId, uint256 amount)",
@@ -24,6 +25,7 @@
       ],
       "worldAbi": [
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
+        "function cancelShaman(bytes32 shamanId)",
         "function createShaman(uint256 initialDeposit, string metadataURI)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
         "function fundShaman(bytes32 shamanId, uint256 amount)",
@@ -31,5 +33,5 @@
       ]
     }
   ],
-  "createdAt": 1738514653099
+  "createdAt": 1738515594217
 }

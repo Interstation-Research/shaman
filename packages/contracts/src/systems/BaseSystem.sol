@@ -7,8 +7,8 @@ import { Shamans, ShamanConfig, Roles } from "../codegen/index.sol";
 import { RoleType } from "../codegen/common.sol";
 
 contract BaseSystem is System {
-  modifier onlyAdmin() {
-    require(Roles.getRole(_msgSender()) == RoleType.Admin, "Not admin");
+  modifier onlyOperator() {
+    require(Roles.getRole(_msgSender()) == RoleType.Operator, "Not operator");
     _;
   }
 

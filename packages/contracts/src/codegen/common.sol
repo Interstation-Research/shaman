@@ -10,5 +10,5 @@ enum TransactionType {
 
 enum RoleType {
   None,
-  Admin
+  Operator
 }

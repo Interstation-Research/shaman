@@ -13,6 +13,8 @@ interface IShamanSystem {
 
   function updateShamanMetadata(bytes32 shamanId, string memory metadataURI) external;
 
+  function cancelShaman(bytes32 shamanId) external;
+
   function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes memory data) external;
 
   function fundShaman(bytes32 shamanId, uint256 amount) external;

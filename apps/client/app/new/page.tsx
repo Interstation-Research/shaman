@@ -149,8 +149,7 @@ export default function Page() {
                       <FormControl>
                         <Textarea
                           placeholder="Enter your prompt here"
-                          className="resize-none"
-                          rows={10}
+                          rows={6}
                           {...field}
                         />
                       </FormControl>

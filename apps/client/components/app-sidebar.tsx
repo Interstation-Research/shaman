@@ -38,7 +38,7 @@ const data = {
   projects: [
     {
       name: 'Zug',
-      url: '#',
+      url: '/shaman',
       icon: Webhook,
     },
   ],

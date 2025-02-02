@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run copy-abis",
     "build:abi": "forge build",
     "build:abi-ts": "mud abi-ts",
     "build:mud": "rimraf src/codegen && mud tablegen && mud worldgen",
@@ -20,7 +20,8 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "GAS_REPORTER_ENABLED=true pnpm mud test",
-    "gas-report": "gas-report --save gas-report.json"
+    "gas-report": "gas-report --save gas-report.json",
+    "copy-abis": "mkdir -p abis && cp out/IWorld.sol/IWorld.abi.json abis/ && cp out/ZugToken.sol/ZugToken.abi.json abis/"
   },
   "dependencies": {
     "@latticexyz/cli": "2.2.17",

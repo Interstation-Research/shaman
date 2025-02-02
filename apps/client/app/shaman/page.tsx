@@ -1,6 +1,7 @@
 'use client';
 
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
+import { MoreVertical } from 'lucide-react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -29,6 +30,20 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const chartData = [
   { month: 'January', executions: 186 },
@@ -37,6 +52,27 @@ const chartData = [
   { month: 'April', executions: 73 },
   { month: 'May', executions: 209 },
   { month: 'June', executions: 214 },
+];
+
+const executionData = [
+  {
+    id: '1',
+    name: 'Execution 1',
+    status: 'completed',
+    date: '2024-03-20',
+  },
+  {
+    id: '2',
+    name: 'Execution 2',
+    status: 'failed',
+    date: '2024-03-19',
+  },
+  {
+    id: '3',
+    name: 'Execution 3',
+    status: 'completed',
+    date: '2024-03-18',
+  },
 ];
 
 const chartConfig = {
@@ -124,6 +160,74 @@ export default function Page() {
                     Showing total executions for the last 6 months
                   </div>
                 </CardFooter>
+              </Card>
+            </div>
+            <div>
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle>Shaman Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">
+                        IPFS Manifest:
+                      </span>
+                      <span className="text-sm">
+                        <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
+                          <span className="font-mono">0x1234567890</span>
+                        </code>
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex-col items-start gap-2 text-sm">
+                  <Button className="w-full" variant="outline">
+                    Trigger Shaman
+                  </Button>
+                  <Button className="w-full" variant="destructive">
+                    Delete Shaman
+                  </Button>
+                </CardFooter>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Execution History</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {executionData.map((execution) => (
+                        <TableRow key={execution.id}>
+                          <TableCell>{execution.name}</TableCell>
+                          <TableCell>{execution.status}</TableCell>
+                          <TableCell>{execution.date}</TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem>View tx</DropdownMenuItem>
+                                <DropdownMenuItem>View logs</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
               </Card>
             </div>
           </div>

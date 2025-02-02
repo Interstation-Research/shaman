@@ -14,7 +14,7 @@ contract ShamanSystemTest is BaseTest {
     _mintTokens(creatorAlice, 10000 ether);
     _increaseAllowance(creatorAlice, 10000 ether);
 
-    // Alice creates a shaman with an initial deposit of 100 $SHAMAN
+    // Alice creates a shaman with an initial deposit of 100 $ZUG
     uint256 initialDeposit = 100 ether;
     bytes32 shamanId = _createShaman(
       creatorAlice,
@@ -121,7 +121,7 @@ contract ShamanSystemTest is BaseTest {
     _mintTokens(creatorAlice, 10000 ether);
     _increaseAllowance(creatorAlice, 10000 ether);
 
-    // Alice creates a shaman with an initial deposit of 100 $SHAMAN
+    // Alice creates a shaman with an initial deposit of 100 $ZUG
     uint256 initialDeposit = 100 ether;
     bytes32 shamanId = _createShaman(
       creatorAlice,
@@ -129,7 +129,7 @@ contract ShamanSystemTest is BaseTest {
       INITIAL_METADATA
     );
 
-    // Fund the shaman with additional $SHAMAN
+    // Fund the shaman with additional $ZUG
     uint256 additionalDeposit = 50 ether;
     _fundShaman(creatorAlice, shamanId, additionalDeposit);
 
@@ -138,7 +138,7 @@ contract ShamanSystemTest is BaseTest {
     uint256 cost = 10 ether;
 
     vm.prank(signerAddress); // Operator executes the transaction
-    world.executeShaman(shamanId, cost, mockContract, data);
+    world.executeShaman(shamanId, cost, address(mockContract), data);
     vm.stopPrank();
 
     // Verify the shaman's balance was reduced
@@ -173,7 +173,7 @@ contract ShamanSystemTest is BaseTest {
     );
 
     // Cancel shaman as creator
-    uint256 creatorBalanceBefore = shamanToken.balanceOf(creatorAlice);
+    uint256 creatorBalanceBefore = token.balanceOf(creatorAlice);
 
     vm.prank(creatorAlice);
     world.cancelShaman(shamanId);
@@ -185,7 +185,7 @@ contract ShamanSystemTest is BaseTest {
     // Verify balance was refunded
     assertEq(Shamans.getBalance(shamanId), 0);
     assertEq(
-      shamanToken.balanceOf(creatorAlice),
+      token.balanceOf(creatorAlice),
       creatorBalanceBefore + initialDeposit
     );
 
@@ -266,7 +266,7 @@ contract ShamanSystemTest is BaseTest {
 
     vm.prank(creatorBob);
     vm.expectRevert("Not operator");
-    world.executeShaman(shamanId, cost, mockContract, data);
+    world.executeShaman(shamanId, cost, address(mockContract), data);
     vm.stopPrank();
   }
 }

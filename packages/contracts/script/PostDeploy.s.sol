@@ -7,7 +7,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { IAccessControl } from "@openzeppelin/contracts/access/IAccessControl.sol";
 
 import { ShamanConfig, Roles } from "../src/codegen/index.sol";
-import { ShamanToken } from "../src/ShamanToken.sol";
+import { ZugToken } from "../src/ZugToken.sol";
 import { RoleType } from "../src/codegen/common.sol";
 
 contract PostDeploy is Script {
@@ -24,19 +24,15 @@ contract PostDeploy is Script {
     // Start broadcasting transactions from the deployer account
     vm.startBroadcast(deployerPrivateKey);
 
-    // Deploy the ShamanToken contract
+    // Deploy the ZugToken contract
     uint256 maxSupply = 1_000_000 ether; // Example max supply
     uint256 price = 0.01 ether; // Example price per token
-    ShamanToken shamanToken = new ShamanToken(
-      maxSupply,
-      price,
-      treasuryAddress
-    );
+    ZugToken zugToken = new ZugToken(maxSupply, price, treasuryAddress);
 
-    console.log("ShamanToken deployed at:", address(shamanToken));
+    console.log("ZugToken deployed at:", address(zugToken));
 
     // Grant roles to the signer address
-    IAccessControl(address(shamanToken)).grantRole(MINTER_ROLE, signerAddress);
+    IAccessControl(address(zugToken)).grantRole(MINTER_ROLE, signerAddress);
 
     console.log("Minter Role granted to signer address:", signerAddress);
 
@@ -46,9 +42,9 @@ contract PostDeploy is Script {
     console.log("Store address set to:", worldAddress);
 
     // Configure ShamanConfig
-    ShamanConfig.setTokenAddress(address(shamanToken));
+    ShamanConfig.setTokenAddress(address(zugToken));
 
-    console.log("ShamanConfig token address set to:", address(shamanToken));
+    console.log("ShamanConfig token address set to:", address(zugToken));
 
     // Grant operator role to signer address
     console.log("Operator role granted to: %s", signerAddress);
@@ -56,9 +52,9 @@ contract PostDeploy is Script {
 
     // Optionally, initialize other configurations or fixtures here
     // Example: Set initial token sale parameters
-    // shamanToken.setSaleActive(true);
-    // shamanToken.setPrice(0.01 ether);
-    // shamanToken.setMaxSupply(maxSupply);
+    // zugToken.setSaleActive(true);
+    // zugToken.setPrice(0.01 ether);
+    // zugToken.setMaxSupply(maxSupply);
 
     vm.stopBroadcast();
   }

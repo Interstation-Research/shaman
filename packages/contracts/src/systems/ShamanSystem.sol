@@ -3,7 +3,6 @@ pragma solidity >=0.8.24;
 import { BaseSystem } from "./BaseSystem.sol";
 import { Shamans, ShamanConfig, ShamanLogs, Roles } from "../codegen/index.sol";
 import { TransactionType, RoleType } from "../codegen/common.sol";
-import { IShamanToken } from "../IShamanToken.sol";
 
 contract ShamanSystem is BaseSystem {
   event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
@@ -106,8 +105,8 @@ contract ShamanSystem is BaseSystem {
     ShamanLogs.setCreatedAt(transactionId, block.timestamp);
     ShamanLogs.setSuccess(transactionId, success);
 
-    // burn $SHAMAN regardless of success
-    _token().burn(address(this), cost);
+    // burn $ZUG regardless of success
+    _token().burn(cost);
   }
 
   function fundShaman(bytes32 shamanId, uint256 amount) public {

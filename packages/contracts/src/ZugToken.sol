@@ -3,9 +3,9 @@ pragma solidity >=0.8.24;
 
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
-import { IShamanToken } from "./IShamanToken.sol";
+import { IZugToken } from "./IZugToken.sol";
 
-contract ShamanToken is IShamanToken, ERC20, AccessControl {
+contract ZugToken is IZugToken, ERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
   address public treasury;
@@ -17,7 +17,7 @@ contract ShamanToken is IShamanToken, ERC20, AccessControl {
     uint256 _maxSupply,
     uint256 _price,
     address _treasury
-  ) ERC20("Shaman", "SHAMAN") {
+  ) ERC20("Zug", "ZUG") {
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
     treasury = _treasury;
     maxSupply = _maxSupply;
@@ -39,9 +39,8 @@ contract ShamanToken is IShamanToken, ERC20, AccessControl {
     _mint(to, amount);
   }
 
-  function burn(address account, uint256 amount) public {
-    require(_msgSender() == account, "Can only burn own tokens");
-    _burn(account, amount);
+  function burn(uint256 amount) public {
+    _burn(_msgSender(), amount);
   }
 
   function setPrice(uint256 _price) public onlyRole(DEFAULT_ADMIN_ROLE) {

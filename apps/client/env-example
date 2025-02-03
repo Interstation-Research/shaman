@@ -3,3 +3,6 @@ NEXT_PUBLIC_CHAIN_ID=421614
 
 # RPC URLs
 NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc 
+
+# OpenAI API Key
+OPENAI_API_KEY=

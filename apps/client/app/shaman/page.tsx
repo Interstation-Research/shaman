@@ -180,6 +180,14 @@ export default function Page() {
                       </span>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Network:</span>
+                    <span className="text-sm">
+                      <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
+                        <span className="font-mono">Arbitrum</span>
+                      </code>
+                    </span>
+                  </div>
                 </CardContent>
                 <CardFooter className="flex-col items-start gap-2 text-sm">
                   <Button className="w-full" variant="outline">

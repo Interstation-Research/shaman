@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -53,19 +52,9 @@ const formSchema = z.object({
   }),
 });
 
-const codeBlock = `
-export default async (context: ShamanContext) => {
-  const { fetch } = context;
-  const response = await fetch('https://coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin&order=market_cap_by_total_volume&per_page=100&page=1&sparkline=false&price_change_percentage=24h&locale=en');
-  const data = await response.json();
-
-  return data;
-}
-`;
-
 export default function Page() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [code, setCode] = useState('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,21 +67,23 @@ export default function Page() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
 
-    console.log(values);
-
     try {
-      // Here you would typically send the form data to your backend
-      // For now, we'll just simulate an API call with a timeout
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await fetch('/api/shaman', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shamanName: values.shamanName,
+          prompt: values.prompt,
+        }),
+      });
+
+      const json = await response.json();
+      setCode(json.code);
 
       toast({
         title: 'Success!',
         description: 'Your Shaman has been created.',
       });
-
-      // Optionally, redirect to another page or reset the form
-      form.reset();
-      router.push('/');
     } catch (error) {
       console.error(error);
       toast({
@@ -179,7 +170,7 @@ export default function Page() {
                 <CardContent className="flex-1">
                   <Highlight
                     theme={themes.jettwaveLight}
-                    code={codeBlock}
+                    code={code}
                     language="tsx">
                     {({ style, tokens, getLineProps, getTokenProps }) => (
                       <pre className="overflow-auto w-full p-4" style={style}>

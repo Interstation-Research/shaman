@@ -54,6 +54,9 @@ const formSchema = z.object({
   prompt: z.string().min(10, {
     message: 'Prompt must be at least 10 characters.',
   }),
+  network: z.enum(['ethereum', 'base', 'optimism', 'polygon', 'arbitrum'], {
+    required_error: 'Please select a network',
+  }),
   frequency: z.enum(['hourly', 'daily', 'weekly'], {
     required_error: 'Please select a frequency',
   }),
@@ -72,6 +75,7 @@ export default function Page() {
     defaultValues: {
       shamanName: '',
       prompt: '',
+      network: 'ethereum',
       frequency: 'daily',
       duration: 1,
     },
@@ -180,6 +184,32 @@ export default function Page() {
                 />
                 <FormField
                   control={form.control}
+                  name="network"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Network</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select network" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="ethereum">Ethereum</SelectItem>
+                          <SelectItem value="base">Base</SelectItem>
+                          <SelectItem value="optimism">Optimism</SelectItem>
+                          <SelectItem value="polygon">Polygon</SelectItem>
+                          <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
                   name="frequency"
                   render={({ field }) => (
                     <FormItem>
@@ -255,7 +285,7 @@ export default function Page() {
                   <Button
                     className="w-full"
                     onClick={handleDeploy}
-                    disabled={isDeploying}>
+                    disabled={isDeploying || !code}>
                     {isDeploying
                       ? 'Deploying...'
                       : `Deploy Shaman (will cost ${duration || 0} $ZUG)`}

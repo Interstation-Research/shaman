@@ -101,7 +101,7 @@ export default function Page() {
 
       toast({
         title: 'Success!',
-        description: 'Your Shaman has been created.',
+        description: `Your Shaman has been created. IPFS: ${json.cid}`,
       });
     } catch (error) {
       console.error(error);

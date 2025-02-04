@@ -1,7 +1,7 @@
 'use client';
 
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
-import { MoreVertical } from 'lucide-react';
+import { Minus, MoreVertical, Plus, Trash2, Zap } from 'lucide-react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -110,11 +110,13 @@ export default function Page() {
                 <CardContent>
                   <p className="text-center text-5xl font-bold">32</p>
                 </CardContent>
-                <CardFooter className="flex-col items-start gap-2 text-sm">
-                  <Button className="w-full" variant="outline">
+                <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
+                  <Button className="w-full" variant="default">
+                    <Plus />
                     Add Balance
                   </Button>
                   <Button className="w-full" variant="outline">
+                    <Minus />
                     Withdraw Balance
                   </Button>
                 </CardFooter>
@@ -189,12 +191,14 @@ export default function Page() {
                     </span>
                   </div>
                 </CardContent>
-                <CardFooter className="flex-col items-start gap-2 text-sm">
+                <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button className="w-full" variant="outline">
-                    Trigger Shaman
+                    <Zap />
+                    Trigger
                   </Button>
                   <Button className="w-full" variant="destructive">
-                    Delete Shaman
+                    <Trash2 />
+                    Delete
                   </Button>
                 </CardFooter>
               </Card>

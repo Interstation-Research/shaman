@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight, Upload, Zap } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
 import {
   SidebarInset,
@@ -307,7 +307,7 @@ export default function Page() {
                     onClick={() => {
                       window.open(`https://ipfs.io/ipfs/${ipfs}`, '_blank');
                     }}
-                    variant="secondary"
+                    variant="outline"
                     className="w-full"
                     disabled={!code}>
                     <Zap className="text-muted-foreground" />
@@ -317,6 +317,7 @@ export default function Page() {
                     onClick={handleDeploy}
                     className="w-full"
                     disabled={isDeploying || !code}>
+                    <Upload />
                     {isDeploying ? 'Deploying...' : `Deploy`}
                   </Button>
                 </CardFooter>

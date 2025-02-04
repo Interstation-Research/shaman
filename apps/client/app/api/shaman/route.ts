@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const system = getSystemPrompt(shamanName);
 
   const result = await generateObject({
-    model: openai('gpt-4o-mini'),
+    model: openai('gpt-4o'),
     system,
     prompt,
     schema: z.object({
@@ -25,15 +25,27 @@ export async function POST(req: Request) {
     }),
   });
 
+  const encodedCode = Buffer.from(result.object.code, 'utf-8').toString(
+    'base64'
+  );
+
+  const metadata = {
+    shamanName,
+    prompt,
+    code: encodedCode,
+    createdAt: new Date().toISOString(),
+  };
+
   const upload = await objectManager.upload(
     shamanName,
-    Buffer.from(result.object.code),
+    Buffer.from(JSON.stringify(metadata)),
     null,
     null
   );
 
   return Response.json({
     code: result.object.code,
-    cid: upload.cid,
+    ipfs: upload.cid,
+    metadata: metadata,
   });
 }

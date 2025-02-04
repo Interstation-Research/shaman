@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
 import {
   SidebarInset,
@@ -69,6 +69,7 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [code, setCode] = useState('');
+  const [ipfs, setIpfs] = useState('');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,8 +81,6 @@ export default function Page() {
       duration: 1,
     },
   });
-
-  const duration = form.watch('duration');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -98,10 +97,11 @@ export default function Page() {
 
       const json = await response.json();
       setCode(json.code);
+      setIpfs(json.ipfs);
 
       toast({
         title: 'Success!',
-        description: `Your Shaman has been created. IPFS: ${json.cid}`,
+        description: `Your Shaman has been created.`,
       });
     } catch (error) {
       console.error(error);
@@ -170,11 +170,11 @@ export default function Page() {
                   name="prompt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Your Prompt</FormLabel>
+                      <FormLabel>Shaman Instructions</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Enter your prompt here"
-                          rows={6}
+                          rows={12}
                           {...field}
                         />
                       </FormControl>
@@ -263,32 +263,61 @@ export default function Page() {
                 <CardHeader>
                   <CardTitle>Your Shaman</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1">
-                  <Highlight
-                    theme={themes.jettwaveLight}
-                    code={code}
-                    language="tsx">
-                    {({ style, tokens, getLineProps, getTokenProps }) => (
-                      <pre className="overflow-auto w-full p-4" style={style}>
-                        {tokens.map((line, i) => (
-                          <div key={i} {...getLineProps({ line })}>
-                            {line.map((token, key) => (
-                              <span key={key} {...getTokenProps({ token })} />
+                <CardContent className="flex-1 max-h-[70vh] min-h-0">
+                  {code ? (
+                    <div className="flex flex-col h-full overflow-y-auto">
+                      <Highlight
+                        theme={themes.jettwaveLight}
+                        code={code}
+                        language="tsx">
+                        {({ style, tokens, getLineProps, getTokenProps }) => (
+                          <pre
+                            className="overflow-auto w-full p-4"
+                            style={style}>
+                            {tokens.map((line, i) => (
+                              <div key={i} {...getLineProps({ line })}>
+                                {line.map((token, key) => (
+                                  <span
+                                    key={key}
+                                    {...getTokenProps({ token })}
+                                  />
+                                ))}
+                              </div>
                             ))}
-                          </div>
-                        ))}
-                      </pre>
-                    )}
-                  </Highlight>
+                          </pre>
+                        )}
+                      </Highlight>
+                    </div>
+                  ) : isLoading ? (
+                    <div className="flex-1 flex h-full items-center justify-center">
+                      <p className="text-sm text-muted-foreground">
+                        Generating code...
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex h-full items-center justify-center">
+                      <p className="text-sm text-muted-foreground">
+                        No code generated yet.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
-                <CardFooter className="flex justify-end mt-auto">
+                <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button
+                    onClick={() => {
+                      window.open(`https://ipfs.io/ipfs/${ipfs}`, '_blank');
+                    }}
+                    variant="secondary"
                     className="w-full"
+                    disabled={!code}>
+                    <Zap className="text-muted-foreground" />
+                    Trigger
+                  </Button>
+                  <Button
                     onClick={handleDeploy}
+                    className="w-full"
                     disabled={isDeploying || !code}>
-                    {isDeploying
-                      ? 'Deploying...'
-                      : `Deploy Shaman (will cost ${duration || 0} $ZUG)`}
+                    {isDeploying ? 'Deploying...' : `Deploy`}
                   </Button>
                 </CardFooter>
               </Card>

@@ -25,14 +25,17 @@ export async function POST(req: Request) {
     }),
   });
 
-  const encodedCode = Buffer.from(result.object.code, 'utf-8').toString(
-    'base64'
+  const code = await objectManager.upload(
+    shamanName,
+    Buffer.from(result.object.code),
+    null,
+    null
   );
 
   const metadata = {
     shamanName,
     prompt,
-    code: encodedCode,
+    code: code.cid,
     createdAt: new Date().toISOString(),
   };
 

@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { ArrowRight } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
-import Link from 'next/link';
 import {
   SidebarInset,
   SidebarProvider,
@@ -16,10 +15,8 @@ import { Separator } from '@/components/ui/separator';
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { AppSidebar } from '@/components/app-sidebar';
 
@@ -42,6 +39,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const formSchema = z.object({
   shamanName: z.string().min(2, {
@@ -50,10 +54,17 @@ const formSchema = z.object({
   prompt: z.string().min(10, {
     message: 'Prompt must be at least 10 characters.',
   }),
+  frequency: z.enum(['hourly', 'daily', 'weekly'], {
+    required_error: 'Please select a frequency',
+  }),
+  duration: z.number().min(1, {
+    message: 'Duration must be at least 1 execution',
+  }),
 });
 
 export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
   const [code, setCode] = useState('');
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,8 +72,12 @@ export default function Page() {
     defaultValues: {
       shamanName: '',
       prompt: '',
+      frequency: 'daily',
+      duration: 1,
     },
   });
+
+  const duration = form.watch('duration');
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -96,6 +111,17 @@ export default function Page() {
     }
   }
 
+  async function handleDeploy() {
+    setIsDeploying(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setIsDeploying(false);
+
+    toast({
+      title: 'Success!',
+      description: 'Your Shaman has been deployed.',
+    });
+  }
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -107,11 +133,7 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Build Your Shaman</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage>Launch</BreadcrumbPage>
+                  <BreadcrumbPage>New Shaman</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -156,6 +178,50 @@ export default function Page() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="frequency"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Frequency</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select frequency" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="hourly">Hourly</SelectItem>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="duration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Number of Executions</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min="1"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(parseInt(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Button className="w-full" type="submit" disabled={isLoading}>
                   {isLoading ? 'Generating...' : 'Generate Shaman Code'}
                   <ArrowRight />
@@ -186,8 +252,13 @@ export default function Page() {
                   </Highlight>
                 </CardContent>
                 <CardFooter className="flex justify-end mt-auto">
-                  <Button className="w-full" asChild>
-                    <Link href="/new/launch">Ready for Launch</Link>
+                  <Button
+                    className="w-full"
+                    onClick={handleDeploy}
+                    disabled={isDeploying}>
+                    {isDeploying
+                      ? 'Deploying...'
+                      : `Deploy Shaman (will cost ${duration || 0} $ZUG)`}
                   </Button>
                 </CardFooter>
               </Card>

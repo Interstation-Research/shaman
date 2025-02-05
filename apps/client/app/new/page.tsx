@@ -305,7 +305,10 @@ export default function Page() {
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button
                     onClick={() => {
-                      window.open(`https://ipfs.io/ipfs/${ipfs}`, '_blank');
+                      window.open(
+                        `https://gateway.shaman.fun/ipfs/${ipfs}`,
+                        '_blank'
+                      );
                     }}
                     variant="outline"
                     className="w-full"

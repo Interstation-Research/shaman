@@ -17,7 +17,9 @@ export async function GET(
 
     const code = await fetch(`https://gateway.shaman.fun/ipfs/${data.code}`);
 
-    return NextResponse.json(code, {
+    const codeData = await code.text();
+
+    return new Response(codeData, {
       headers: {
         'Content-Type': 'application/typescript',
       },

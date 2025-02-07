@@ -6,6 +6,7 @@ import { createConfig } from '@privy-io/wagmi';
 import { arbitrumSepolia } from 'wagmi/chains';
 import { WagmiProvider } from '@privy-io/wagmi';
 import { http } from 'wagmi';
+import { MUDProvider } from '@/contexts/mud-context';
 
 const queryClient = new QueryClient();
 
@@ -25,11 +26,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           theme: 'dark',
         },
         embeddedWallets: {
-          createOnLogin: 'users-without-wallets',
+          createOnLogin: 'all-users',
         },
       }}>
       <QueryClientProvider client={queryClient}>
-        <WagmiProvider config={config}>{children}</WagmiProvider>
+        <WagmiProvider config={config}>
+          <MUDProvider>{children}</MUDProvider>
+        </WagmiProvider>
       </QueryClientProvider>
     </PrivyProvider>
   );

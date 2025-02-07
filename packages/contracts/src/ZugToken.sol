@@ -7,6 +7,7 @@ import { IZugToken } from "./IZugToken.sol";
 
 contract ZugToken is IZugToken, ERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
   address public treasury;
   uint256 public maxSupply;
@@ -41,7 +42,7 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
     _mint(to, amount);
   }
 
-  function burn(uint256 amount) public {
+  function burn(uint256 amount) public onlyRole(BURNER_ROLE) {
     _burn(_msgSender(), amount);
   }
 

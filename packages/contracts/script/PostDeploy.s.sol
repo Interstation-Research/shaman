@@ -12,6 +12,7 @@ import { RoleType } from "../src/codegen/common.sol";
 
 contract PostDeploy is Script {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+  bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
 
   function run(address worldAddress) external {
     // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
@@ -35,6 +36,7 @@ contract PostDeploy is Script {
     zugToken.setTreasury(treasuryAddress);
     zugToken.setPrice(price);
     zugToken.grantRole(MINTER_ROLE, signerAddress);
+    zugToken.grantRole(BURNER_ROLE, worldAddress);
 
     console.log("ZugToken treasury set to:", treasuryAddress);
     console.log("ZugToken price set to:", price);

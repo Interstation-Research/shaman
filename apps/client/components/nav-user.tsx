@@ -4,6 +4,7 @@ import { ChevronsUpDown, LogOut, Sparkles } from 'lucide-react';
 import BoringAvatar from 'boring-avatars';
 import { usePrivy } from '@privy-io/react-auth';
 import { Avatar } from '@/components/ui/avatar';
+import { useWalletDelegation } from '@/hooks/use-wallet-delegation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,8 @@ import { trimHash } from '@/lib/utils';
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, login, logout } = usePrivy();
+  useWalletDelegation();
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>

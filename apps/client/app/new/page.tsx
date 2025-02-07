@@ -138,8 +138,8 @@ export default function Page() {
             </Breadcrumb>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 h-full">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 p-4 h-full">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-2">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -237,10 +237,10 @@ export default function Page() {
                 </Button>
               </form>
             </Form>
-            <div className="flex flex-col gap-4 h-full p-2 pt-4">
+            <div className="flex flex-col gap-4 h-full p-2">
               <Card className="flex-1 shadow-lg flex flex-col">
                 <CardHeader>
-                  <CardTitle>Your Shaman</CardTitle>
+                  <CardTitle>Shaman Code</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 max-h-[70vh] min-h-0">
                   {code ? (

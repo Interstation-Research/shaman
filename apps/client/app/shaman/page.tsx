@@ -2,12 +2,13 @@
 
 import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 import { Minus, MoreVertical, Plus, Trash2, Zap } from 'lucide-react';
+import { themes } from 'prism-react-renderer';
+import { Highlight } from 'prism-react-renderer';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -46,12 +47,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const chartData = [
-  { month: 'January', executions: 186 },
-  { month: 'February', executions: 305 },
-  { month: 'March', executions: 237 },
-  { month: 'April', executions: 73 },
-  { month: 'May', executions: 209 },
-  { month: 'June', executions: 214 },
+  { day: 'Monday', executions: 186 },
+  { day: 'Tuesday', executions: 305 },
+  { day: 'Wednesday', executions: 237 },
+  { day: 'Thursday', executions: 73 },
+  { day: 'Friday', executions: 209 },
+  { day: 'Saturday', executions: 214 },
+  { day: 'Sunday', executions: 214 },
 ];
 
 const executionData = [
@@ -81,6 +83,27 @@ const chartConfig = {
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig;
+
+const code = `
+export default async (context: ShamanContext) => {
+  const { fetch } = context;
+
+  // Fetch ETH price from CoinGecko
+  const response = await fetch(
+    'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+  );
+  if (!response.ok) {
+    throw new Error('Failed to fetch ETH price');
+  }
+  const priceData = await response.json();
+  const ethPrice = priceData.ethereum.usd;
+
+  // Return the ETH price
+  return {
+    ethPrice // Current ETH price in USD
+  };
+}
+`;
 
 export default function Page() {
   return (
@@ -121,10 +144,9 @@ export default function Page() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card>
+              <Card className="mb-4">
                 <CardHeader>
                   <CardTitle>Executions</CardTitle>
-                  <CardDescription>January - June 2024</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ChartContainer config={chartConfig}>
@@ -137,7 +159,7 @@ export default function Page() {
                       }}>
                       <CartesianGrid vertical={false} />
                       <XAxis
-                        dataKey="month"
+                        dataKey="day"
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
@@ -159,52 +181,13 @@ export default function Page() {
                 </CardContent>
                 <CardFooter className="flex-col items-start gap-2 text-sm">
                   <div className="leading-none text-muted-foreground">
-                    Showing total executions for the last 6 months
+                    Showing executions for the last 7 days
                   </div>
-                </CardFooter>
-              </Card>
-            </div>
-            <div>
-              <Card className="mb-4">
-                <CardHeader>
-                  <CardTitle>Shaman Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        IPFS Manifest:
-                      </span>
-                      <span className="text-sm">
-                        <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
-                          <span className="font-mono">0x1234567890</span>
-                        </code>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">Network:</span>
-                    <span className="text-sm">
-                      <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
-                        <span className="font-mono">Arbitrum</span>
-                      </code>
-                    </span>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
-                  <Button className="w-full" variant="outline">
-                    <Zap />
-                    Trigger
-                  </Button>
-                  <Button className="w-full" variant="destructive">
-                    <Trash2 />
-                    Delete
-                  </Button>
                 </CardFooter>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Execution History</CardTitle>
+                  <CardTitle>Execution Logs</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
@@ -240,6 +223,45 @@ export default function Page() {
                     </TableBody>
                   </Table>
                 </CardContent>
+              </Card>
+            </div>
+            <div>
+              <Card className="mb-4">
+                <CardHeader>
+                  <CardTitle>Shaman Code</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 max-h-[70vh] min-h-0">
+                  <div className="flex flex-col h-full overflow-y-auto">
+                    <Highlight
+                      theme={themes.nightOwl}
+                      code={code}
+                      language="tsx">
+                      {({ style, tokens, getLineProps, getTokenProps }) => (
+                        <pre
+                          className="overflow-auto w-full p-4 text-sm"
+                          style={style}>
+                          {tokens.map((line, i) => (
+                            <div key={i} {...getLineProps({ line })}>
+                              {line.map((token, key) => (
+                                <span key={key} {...getTokenProps({ token })} />
+                              ))}
+                            </div>
+                          ))}
+                        </pre>
+                      )}
+                    </Highlight>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
+                  <Button className="w-full" variant="outline">
+                    <Zap />
+                    Trigger
+                  </Button>
+                  <Button className="w-full" variant="destructive">
+                    <Trash2 />
+                    Delete
+                  </Button>
+                </CardFooter>
               </Card>
             </div>
           </div>

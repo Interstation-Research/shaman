@@ -21,6 +21,7 @@
         "function createShaman(uint256 initialDeposit, string metadataURI)",
         "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
+        "function getTokenAddress() view returns (address)",
         "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
         "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ],
@@ -30,10 +31,11 @@
         "function createShaman(uint256 initialDeposit, string metadataURI)",
         "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
+        "function getTokenAddress() view returns (address)",
         "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
         "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ]
     }
   ],
-  "createdAt": 1738957427041
+  "createdAt": 1738970651710
 }

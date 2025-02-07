@@ -20,4 +20,6 @@ interface IShamanSystem {
   function depositShaman(bytes32 shamanId, uint256 amount) external;
 
   function withdrawShaman(bytes32 shamanId, uint256 amount) external;
+
+  function getTokenAddress() external view returns (address);
 }

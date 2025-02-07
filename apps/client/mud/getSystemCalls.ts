@@ -7,6 +7,7 @@ export type SystemCalls = ReturnType<typeof getSystemCalls>;
 
 export function getSystemCalls({
   worldContract,
+  tokenContract,
   networkConfig,
   waitForTransaction,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -66,9 +67,28 @@ export function getSystemCalls({
     return waitForTransaction(hash);
   };
 
+  const purchase = async (quantity: bigint) => {
+    await tokenContract.simulate.purchase([quantity], {
+      account: account.address,
+    });
+
+    const hash = await tokenContract.write.purchase([quantity], {
+      chain,
+      account,
+    });
+
+    return waitForTransaction(hash);
+  };
+
+  const getBalanceOf = async (address: Hex): Promise<bigint> => {
+    return (await tokenContract.read.balanceOf([address])) as bigint;
+  };
+
   return {
     createShaman,
     updateShamanMetadata,
     cancelShaman,
+    purchase,
+    getBalanceOf,
   };
 }

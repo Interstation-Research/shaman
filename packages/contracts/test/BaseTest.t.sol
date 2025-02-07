@@ -91,13 +91,13 @@ contract BaseTest is MudTest, GasReporter {
     console.log("Created shaman with ID:", uint256(shamanId));
   }
 
-  function _fundShaman(
+  function _depositShaman(
     address creator,
     bytes32 shamanId,
     uint256 amount
   ) internal {
     vm.prank(creator);
-    world.fundShaman(shamanId, amount);
+    world.depositShaman(shamanId, amount);
     vm.stopPrank();
   }
 }

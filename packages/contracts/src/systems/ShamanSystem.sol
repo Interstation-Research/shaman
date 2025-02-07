@@ -100,7 +100,7 @@ contract ShamanSystem is BaseSystem {
     Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) - cost);
 
     ShamanLogs.setShamanId(logId, shamanId);
-    ShamanLogs.setLogType(logId, LogType.Transaction);
+    ShamanLogs.setLogType(logId, LogType.Execution);
     ShamanLogs.setAmount(logId, cost);
     ShamanLogs.setCreatedAt(logId, block.timestamp);
     ShamanLogs.setSuccess(logId, success);
@@ -109,7 +109,8 @@ contract ShamanSystem is BaseSystem {
     _token().burn(cost);
   }
 
-  function fundShaman(bytes32 shamanId, uint256 amount) public {
+  // add deposit and withdraw functions
+  function depositShaman(bytes32 shamanId, uint256 amount) public {
     require(Shamans.getActive(shamanId), "Shaman is not active");
     require(amount > 0, "Amount must be greater than 0");
     _token().transferFrom(_msgSender(), address(this), amount);
@@ -120,6 +121,23 @@ contract ShamanSystem is BaseSystem {
 
     ShamanLogs.setShamanId(logId, shamanId);
     ShamanLogs.setLogType(logId, LogType.Deposit);
+    ShamanLogs.setAmount(logId, amount);
+    ShamanLogs.setSuccess(logId, true);
+    ShamanLogs.setCreatedAt(logId, block.timestamp);
+  }
+
+  function withdrawShaman(bytes32 shamanId, uint256 amount) public {
+    require(Shamans.getActive(shamanId), "Shaman is not active");
+    require(amount > 0, "Amount must be greater than 0");
+    require(Shamans.getBalance(shamanId) >= amount, "Insufficient balance");
+
+    Shamans.setBalance(shamanId, Shamans.getBalance(shamanId) - amount);
+    _token().transfer(_msgSender(), amount);
+
+    bytes32 logId = keccak256(abi.encodePacked(shamanId, block.timestamp));
+
+    ShamanLogs.setShamanId(logId, shamanId);
+    ShamanLogs.setLogType(logId, LogType.Withdraw);
     ShamanLogs.setAmount(logId, amount);
     ShamanLogs.setSuccess(logId, true);
     ShamanLogs.setCreatedAt(logId, block.timestamp);

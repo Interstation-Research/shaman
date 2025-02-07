@@ -19,19 +19,21 @@
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
         "function cancelShaman(bytes32 shamanId)",
         "function createShaman(uint256 initialDeposit, string metadataURI)",
+        "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
-        "function fundShaman(bytes32 shamanId, uint256 amount)",
-        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)"
+        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
+        "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ],
       "worldAbi": [
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
         "function cancelShaman(bytes32 shamanId)",
         "function createShaman(uint256 initialDeposit, string metadataURI)",
+        "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
-        "function fundShaman(bytes32 shamanId, uint256 amount)",
-        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)"
+        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
+        "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ]
     }
   ],
-  "createdAt": 1738525667400
+  "createdAt": 1738956041893
 }

@@ -48,11 +48,8 @@ import {
 } from '@/components/ui/select';
 
 const formSchema = z.object({
-  shamanName: z.string().min(2, {
-    message: 'Shaman name must be at least 2 characters.',
-  }),
-  prompt: z.string().min(10, {
-    message: 'Prompt must be at least 10 characters.',
+  prompt: z.string().min(16, {
+    message: 'Prompt must be at least 16 characters.',
   }),
   network: z.enum(['ethereum', 'base', 'optimism', 'polygon', 'arbitrum'], {
     required_error: 'Please select a network',
@@ -74,7 +71,6 @@ export default function Page() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      shamanName: '',
       prompt: '',
       network: 'ethereum',
       frequency: 'daily',
@@ -90,7 +86,6 @@ export default function Page() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shamanName: values.shamanName,
           prompt: values.prompt,
         }),
       });
@@ -151,30 +146,14 @@ export default function Page() {
                 className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="shamanName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Shaman Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter your shaman name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
                   name="prompt"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Shaman Instructions</FormLabel>
+                      <FormLabel>Shaman Interface</FormLabel>
                       <FormControl>
                         <Textarea
                           placeholder="Enter your prompt here"
-                          rows={12}
+                          rows={18}
                           {...field}
                         />
                       </FormControl>
@@ -267,12 +246,12 @@ export default function Page() {
                   {code ? (
                     <div className="flex flex-col h-full overflow-y-auto">
                       <Highlight
-                        theme={themes.jettwaveLight}
+                        theme={themes.nightOwl}
                         code={code}
                         language="tsx">
                         {({ style, tokens, getLineProps, getTokenProps }) => (
                           <pre
-                            className="overflow-auto w-full p-4"
+                            className="overflow-auto w-full p-4 text-sm"
                             style={style}>
                             {tokens.map((line, i) => (
                               <div key={i} {...getLineProps({ line })}>

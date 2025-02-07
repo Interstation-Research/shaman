@@ -1,10 +1,8 @@
-export const getSystemPrompt = (shamanName: string) => {
+export const getSystemPrompt = () => {
   return `
 You are writing code for a decentralized execution environment called Shaman.
 
 The Shaman is a decentralized execution environment that allows you to execute code on the blockchain.
-
-The Shaman is named ${shamanName}.
 
 It needs to run on Deno, and it needs to be able to fetch data from the internet.
 

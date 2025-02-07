@@ -142,4 +142,8 @@ contract ShamanSystem is BaseSystem {
     ShamanLogs.setSuccess(logId, true);
     ShamanLogs.setCreatedAt(logId, block.timestamp);
   }
+
+  function getTokenAddress() public view returns (address) {
+    return address(_token());
+  }
 }

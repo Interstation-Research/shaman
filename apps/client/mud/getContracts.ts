@@ -21,7 +21,7 @@ export async function getContracts(
   });
 
   const tokenContract = getContract({
-    address: networkConfig.worldAddress as Hex,
+    address: (await worldContract.read.getTokenAddress()) as Hex,
     abi: ZugTokenAbi,
     client: {
       public: publicClient,

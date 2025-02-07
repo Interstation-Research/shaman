@@ -1,20 +1,20 @@
 import { openai } from '@ai-sdk/openai';
 import { generateObject } from 'ai';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { getSystemPrompt } from '@/prompts/system';
 import { objectManager } from '@/services/filebase';
 
 interface ShamanRequest {
   prompt: string;
-  shamanName: string;
   network: string;
   frequency: string;
   duration: number;
 }
 
 export async function POST(req: Request) {
-  const { prompt, shamanName }: ShamanRequest = await req.json();
-  const system = getSystemPrompt(shamanName);
+  const { prompt }: ShamanRequest = await req.json();
+  const system = getSystemPrompt();
 
   const result = await generateObject({
     model: openai('gpt-4o'),
@@ -29,15 +29,17 @@ export async function POST(req: Request) {
     'base64'
   );
 
+  const shamanId = uuidv4();
+
   const metadata = {
-    shamanName,
+    shamanId,
     prompt,
     code: encodedCode,
     createdAt: new Date().toISOString(),
   };
 
   const upload = await objectManager.upload(
-    shamanName,
+    shamanId,
     Buffer.from(JSON.stringify(metadata)),
     null,
     null
@@ -46,6 +48,6 @@ export async function POST(req: Request) {
   return Response.json({
     code: result.object.code,
     ipfs: upload.cid,
-    metadata: metadata,
+    metadata,
   });
 }

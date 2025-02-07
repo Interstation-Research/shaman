@@ -45,6 +45,7 @@
     "shiki": "^2.2.0",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.5",
     "viem": "^2.22.17",
     "wagmi": "^2.14.10",
     "zod": "^3.24.1"

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sparkles, LifeBuoy, Send, Webhook } from 'lucide-react';
+import { Sparkles, Webhook, Book, Send, X } from 'lucide-react';
 
 import Link from 'next/link';
 import { NavShamans } from '@/components/nav-shamans';
@@ -20,14 +20,19 @@ import {
 const data = {
   navSecondary: [
     {
-      title: 'Support',
+      title: 'Follow us on X',
       url: '#',
-      icon: LifeBuoy,
+      icon: X,
     },
     {
-      title: 'Feedback',
+      title: 'Telegram',
       url: '#',
       icon: Send,
+    },
+    {
+      title: 'Documentation',
+      url: '#',
+      icon: Book,
     },
   ],
   projects: [

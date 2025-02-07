@@ -22,7 +22,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       appId={process.env.NEXT_PUBLIC_PRIVY_APP_ID!}
       config={{
         appearance: {
-          theme: 'light',
+          theme: 'dark',
         },
         embeddedWallets: {
           createOnLogin: 'users-without-wallets',

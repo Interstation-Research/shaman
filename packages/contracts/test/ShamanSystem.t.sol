@@ -128,7 +128,7 @@ contract ShamanSystemTest is BaseTest {
 
     // Fund the shaman with additional $ZUG
     uint256 additionalDeposit = 50 ether;
-    _fundShaman(creatorAlice, shamanId, additionalDeposit);
+    _depositShaman(creatorAlice, shamanId, additionalDeposit);
 
     // Execute a transaction on the mock contract
     bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42);
@@ -151,7 +151,7 @@ contract ShamanSystemTest is BaseTest {
     assertEq(ShamanLogs.getShamanId(logId), shamanId);
     assertEq(
       uint256(ShamanLogs.getLogType(logId)),
-      uint256(LogType.Transaction)
+      uint256(LogType.Execution)
     );
     assertEq(ShamanLogs.getAmount(logId), cost);
     assertEq(ShamanLogs.getSuccess(logId), true);

@@ -6,6 +6,7 @@
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:api": "pnpm --filter 'api' run dev",
     "dev:contracts": "pnpm --filter 'contracts' run dev",
+    "indexer:sqlite": "npx -y -p @latticexyz/store-indexer@next sqlite-indexer",
     "build": "pnpm recursive run build",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "foundry:setup": "(forge --version || pnpm foundry:up)",

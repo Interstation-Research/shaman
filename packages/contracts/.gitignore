@@ -5,3 +5,4 @@ deploys/
 
 # Ignore MUD deploy artifacts
 deploys/**/*.json
+.mud/

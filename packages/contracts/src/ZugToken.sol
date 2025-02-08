@@ -9,19 +9,26 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
   bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
   address public treasury;
-  uint256 public maxSupply;
+  uint256 private _maxSupply;
+  uint256 private _maxSaleSupply;
+  uint256 public totalSaleSupply;
   uint256 public price;
   bool public saleActive;
 
-  constructor(uint256 _maxSupply) ERC20("Zug", "ZUG") {
+  constructor(uint256 maxSupply_, uint256 maxSaleSupply_) ERC20("Zug", "ZUG") {
+    require(
+      maxSaleSupply_ <= maxSupply_,
+      "ZugToken: max sale supply cannot exceed max supply"
+    );
     _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    maxSupply = _maxSupply;
+    _maxSupply = maxSupply_;
+    _maxSaleSupply = maxSaleSupply_;
     saleActive = false;
   }
 
   function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
     require(
-      totalSupply() + amount <= maxSupply,
+      totalSupply() + amount <= _maxSupply,
       "ZugToken: mint would exceed max supply"
     );
     _mint(to, amount);
@@ -33,11 +40,16 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
     uint256 totalCost = amount * price;
     require(msg.value >= totalCost, "ZugToken: insufficient payment");
     require(
-      totalSupply() + amount <= maxSupply,
+      totalSaleSupply + amount <= _maxSaleSupply,
+      "ZugToken: purchase would exceed max sale supply"
+    );
+    require(
+      totalSupply() + amount <= _maxSupply,
       "ZugToken: purchase would exceed max supply"
     );
     require(treasury != address(0), "ZugToken: treasury not set");
 
+    totalSaleSupply += amount;
     _mint(to, amount);
   }
 
@@ -51,13 +63,27 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
   }
 
   function setMaxSupply(
-    uint256 _maxSupply
+    uint256 maxSupply_
   ) public onlyRole(DEFAULT_ADMIN_ROLE) {
     require(
-      _maxSupply >= totalSupply(),
+      maxSupply_ >= totalSupply(),
       "ZugToken: new max supply below current supply"
     );
-    maxSupply = _maxSupply;
+    _maxSupply = maxSupply_;
+  }
+
+  function setMaxSaleSupply(
+    uint256 maxSaleSupply_
+  ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    require(
+      maxSaleSupply_ >= totalSaleSupply,
+      "ZugToken: new max sale supply below current sale supply"
+    );
+    require(
+      maxSaleSupply_ <= _maxSupply,
+      "ZugToken: max sale supply cannot exceed max supply"
+    );
+    _maxSaleSupply = maxSaleSupply_;
   }
 
   function setSaleActive(bool _saleActive) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -78,7 +104,19 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
     payable(treasury).transfer(address(this).balance);
   }
 
+  function decimals() public pure virtual override returns (uint8) {
+    return 0;
+  }
+
   function getPrice(uint256 amount) public view returns (uint256) {
     return amount * price;
+  }
+
+  function maxSupply() public view returns (uint256) {
+    return _maxSupply;
+  }
+
+  function maxSaleSupply() public view returns (uint256) {
+    return _maxSaleSupply;
   }
 }

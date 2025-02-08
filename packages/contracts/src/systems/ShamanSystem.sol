@@ -7,11 +7,8 @@ import { LogType, RoleType } from "../codegen/common.sol";
 contract ShamanSystem is BaseSystem {
   event ShamanCreated(bytes32 indexed shamanId, address indexed creator);
 
-  function createShaman(
-    uint256 initialDeposit,
-    string memory metadataURI
-  ) public {
-    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+  function createShaman(uint256 initialDeposit, string memory metadata) public {
+    require(bytes(metadata).length > 0, "Metadata cannot be empty");
 
     bytes32 shamanId = keccak256(
       abi.encodePacked(_msgSender(), block.timestamp, block.prevrandao)
@@ -20,7 +17,7 @@ contract ShamanSystem is BaseSystem {
     Shamans.setActive(shamanId, true);
     Shamans.setCreatedAt(shamanId, block.timestamp);
     Shamans.setBalance(shamanId, initialDeposit);
-    Shamans.setMetadataURI(shamanId, metadataURI);
+    Shamans.setMetadata(shamanId, metadata);
 
     if (initialDeposit > 0) {
       _token().transferFrom(_msgSender(), address(this), initialDeposit);
@@ -40,12 +37,12 @@ contract ShamanSystem is BaseSystem {
 
   function updateShamanMetadata(
     bytes32 shamanId,
-    string memory metadataURI
+    string memory metadata
   ) public onlyCreator(shamanId) {
-    require(bytes(metadataURI).length > 0, "Metadata URI cannot be empty");
+    require(bytes(metadata).length > 0, "Metadata cannot be empty");
     require(Shamans.getActive(shamanId), "Shaman is not active");
 
-    Shamans.setMetadataURI(shamanId, metadataURI);
+    Shamans.setMetadata(shamanId, metadata);
   }
 
   function cancelShaman(bytes32 shamanId) public onlyCreator(shamanId) {
@@ -74,11 +71,11 @@ contract ShamanSystem is BaseSystem {
     }
   }
 
-  function executeShaman(
+  function logShamanOperation(
     bytes32 shamanId,
     uint256 cost,
-    address target,
-    bytes memory data
+    string memory logMetadata,
+    bool success
   ) public onlyOperator {
     require(Shamans.getActive(shamanId), "Shaman is not active");
     require(
@@ -89,9 +86,7 @@ contract ShamanSystem is BaseSystem {
       _token().balanceOf(address(this)) >= cost,
       "Insufficient balance in contract"
     );
-
-    // execute the calldata
-    (bool success, ) = target.call(data);
+    require(bytes(logMetadata).length > 0, "Log metadata cannot be empty");
 
     bytes32 logId = keccak256(
       abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
@@ -104,8 +99,9 @@ contract ShamanSystem is BaseSystem {
     ShamanLogs.setAmount(logId, cost);
     ShamanLogs.setCreatedAt(logId, block.timestamp);
     ShamanLogs.setSuccess(logId, success);
+    ShamanLogs.setLogMetadata(logId, logMetadata);
 
-    // burn $ZUG regardless of success
+    // burn $ZUG
     _token().burn(cost);
   }
 
@@ -146,7 +142,7 @@ contract ShamanSystem is BaseSystem {
   function getShamanMetadata(
     bytes32 shamanId
   ) public view returns (string memory) {
-    return Shamans.getMetadataURI(shamanId);
+    return Shamans.getMetadata(shamanId);
   }
 
   function getShamanBalance(bytes32 shamanId) public view returns (uint256) {

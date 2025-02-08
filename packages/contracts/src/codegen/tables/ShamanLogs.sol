@@ -24,12 +24,12 @@ library ShamanLogs {
   ResourceId constant _tableId = ResourceId.wrap(0x746200000000000000000000000000005368616d616e4c6f6773000000000000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0062050001202001200000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0062050101202001200000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (bytes32)
   Schema constant _keySchema = Schema.wrap(0x002001005f000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (uint8, bytes32, uint256, bool, uint256)
-  Schema constant _valueSchema = Schema.wrap(0x00620500005f1f601f0000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (uint8, bytes32, uint256, bool, uint256, string)
+  Schema constant _valueSchema = Schema.wrap(0x00620501005f1f601fc500000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -45,12 +45,13 @@ library ShamanLogs {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](5);
+    fieldNames = new string[](6);
     fieldNames[0] = "logType";
     fieldNames[1] = "shamanId";
     fieldNames[2] = "amount";
     fieldNames[3] = "success";
     fieldNames[4] = "createdAt";
+    fieldNames[5] = "logMetadata";
   }
 
   /**
@@ -278,11 +279,184 @@ library ShamanLogs {
   }
 
   /**
+   * @notice Get logMetadata.
+   */
+  function getLogMetadata(bytes32 logId) internal view returns (string memory logMetadata) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    bytes memory _blob = StoreSwitch.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Get logMetadata.
+   */
+  function _getLogMetadata(bytes32 logId) internal view returns (string memory logMetadata) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    bytes memory _blob = StoreCore.getDynamicField(_tableId, _keyTuple, 0);
+    return (string(_blob));
+  }
+
+  /**
+   * @notice Set logMetadata.
+   */
+  function setLogMetadata(bytes32 logId, string memory logMetadata) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreSwitch.setDynamicField(_tableId, _keyTuple, 0, bytes((logMetadata)));
+  }
+
+  /**
+   * @notice Set logMetadata.
+   */
+  function _setLogMetadata(bytes32 logId, string memory logMetadata) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreCore.setDynamicField(_tableId, _keyTuple, 0, bytes((logMetadata)));
+  }
+
+  /**
+   * @notice Get the length of logMetadata.
+   */
+  function lengthLogMetadata(bytes32 logId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    uint256 _byteLength = StoreSwitch.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get the length of logMetadata.
+   */
+  function _lengthLogMetadata(bytes32 logId) internal view returns (uint256) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    uint256 _byteLength = StoreCore.getDynamicFieldLength(_tableId, _keyTuple, 0);
+    unchecked {
+      return _byteLength / 1;
+    }
+  }
+
+  /**
+   * @notice Get an item of logMetadata.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function getItemLogMetadata(bytes32 logId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    unchecked {
+      bytes memory _blob = StoreSwitch.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Get an item of logMetadata.
+   * @dev Reverts with Store_IndexOutOfBounds if `_index` is out of bounds for the array.
+   */
+  function _getItemLogMetadata(bytes32 logId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    unchecked {
+      bytes memory _blob = StoreCore.getDynamicFieldSlice(_tableId, _keyTuple, 0, _index * 1, (_index + 1) * 1);
+      return (string(_blob));
+    }
+  }
+
+  /**
+   * @notice Push a slice to logMetadata.
+   */
+  function pushLogMetadata(bytes32 logId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreSwitch.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Push a slice to logMetadata.
+   */
+  function _pushLogMetadata(bytes32 logId, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreCore.pushToDynamicField(_tableId, _keyTuple, 0, bytes((_slice)));
+  }
+
+  /**
+   * @notice Pop a slice from logMetadata.
+   */
+  function popLogMetadata(bytes32 logId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreSwitch.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Pop a slice from logMetadata.
+   */
+  function _popLogMetadata(bytes32 logId) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    StoreCore.popFromDynamicField(_tableId, _keyTuple, 0, 1);
+  }
+
+  /**
+   * @notice Update a slice of logMetadata at `_index`.
+   */
+  function updateLogMetadata(bytes32 logId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreSwitch.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
+   * @notice Update a slice of logMetadata at `_index`.
+   */
+  function _updateLogMetadata(bytes32 logId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = logId;
+
+    unchecked {
+      bytes memory _encoded = bytes((_slice));
+      StoreCore.spliceDynamicData(_tableId, _keyTuple, 0, uint40(_index * 1), uint40(_encoded.length), _encoded);
+    }
+  }
+
+  /**
    * @notice Get the full data.
    */
   function get(
     bytes32 logId
-  ) internal view returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
+  )
+    internal
+    view
+    returns (
+      LogType logType,
+      bytes32 shamanId,
+      uint256 amount,
+      bool success,
+      uint256 createdAt,
+      string memory logMetadata
+    )
+  {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = logId;
 
@@ -299,7 +473,18 @@ library ShamanLogs {
    */
   function _get(
     bytes32 logId
-  ) internal view returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
+  )
+    internal
+    view
+    returns (
+      LogType logType,
+      bytes32 shamanId,
+      uint256 amount,
+      bool success,
+      uint256 createdAt,
+      string memory logMetadata
+    )
+  {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = logId;
 
@@ -320,12 +505,13 @@ library ShamanLogs {
     bytes32 shamanId,
     uint256 amount,
     bool success,
-    uint256 createdAt
+    uint256 createdAt,
+    string memory logMetadata
   ) internal {
     bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(logMetadata);
+    bytes memory _dynamicData = encodeDynamic(logMetadata);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = logId;
@@ -342,12 +528,13 @@ library ShamanLogs {
     bytes32 shamanId,
     uint256 amount,
     bool success,
-    uint256 createdAt
+    uint256 createdAt,
+    string memory logMetadata
   ) internal {
     bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(logMetadata);
+    bytes memory _dynamicData = encodeDynamic(logMetadata);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = logId;
@@ -373,17 +560,45 @@ library ShamanLogs {
   }
 
   /**
+   * @notice Decode the tightly packed blob of dynamic data using the encoded lengths.
+   */
+  function decodeDynamic(
+    EncodedLengths _encodedLengths,
+    bytes memory _blob
+  ) internal pure returns (string memory logMetadata) {
+    uint256 _start;
+    uint256 _end;
+    unchecked {
+      _end = _encodedLengths.atIndex(0);
+    }
+    logMetadata = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /**
    * @notice Decode the tightly packed blobs using this table's field layout.
    * @param _staticData Tightly packed static fields.
-   *
-   *
+   * @param _encodedLengths Encoded lengths of dynamic fields.
+   * @param _dynamicData Tightly packed dynamic fields.
    */
   function decode(
     bytes memory _staticData,
-    EncodedLengths,
-    bytes memory
-  ) internal pure returns (LogType logType, bytes32 shamanId, uint256 amount, bool success, uint256 createdAt) {
+    EncodedLengths _encodedLengths,
+    bytes memory _dynamicData
+  )
+    internal
+    pure
+    returns (
+      LogType logType,
+      bytes32 shamanId,
+      uint256 amount,
+      bool success,
+      uint256 createdAt,
+      string memory logMetadata
+    )
+  {
     (logType, shamanId, amount, success, createdAt) = decodeStatic(_staticData);
+
+    (logMetadata) = decodeDynamic(_encodedLengths, _dynamicData);
   }
 
   /**
@@ -421,6 +636,25 @@ library ShamanLogs {
   }
 
   /**
+   * @notice Tightly pack dynamic data lengths using this table's schema.
+   * @return _encodedLengths The lengths of the dynamic fields (packed into a single bytes32 value).
+   */
+  function encodeLengths(string memory logMetadata) internal pure returns (EncodedLengths _encodedLengths) {
+    // Lengths are effectively checked during copy by 2**40 bytes exceeding gas limits
+    unchecked {
+      _encodedLengths = EncodedLengthsLib.pack(bytes(logMetadata).length);
+    }
+  }
+
+  /**
+   * @notice Tightly pack dynamic (variable length) data using this table's schema.
+   * @return The dynamic data, encoded into a sequence of bytes.
+   */
+  function encodeDynamic(string memory logMetadata) internal pure returns (bytes memory) {
+    return abi.encodePacked(bytes((logMetadata)));
+  }
+
+  /**
    * @notice Encode all of a record's fields.
    * @return The static (fixed length) data, encoded into a sequence of bytes.
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
@@ -431,12 +665,13 @@ library ShamanLogs {
     bytes32 shamanId,
     uint256 amount,
     bool success,
-    uint256 createdAt
+    uint256 createdAt,
+    string memory logMetadata
   ) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
     bytes memory _staticData = encodeStatic(logType, shamanId, amount, success, createdAt);
 
-    EncodedLengths _encodedLengths;
-    bytes memory _dynamicData;
+    EncodedLengths _encodedLengths = encodeLengths(logMetadata);
+    bytes memory _dynamicData = encodeDynamic(logMetadata);
 
     return (_staticData, _encodedLengths, _dynamicData);
   }

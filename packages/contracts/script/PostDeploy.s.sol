@@ -25,11 +25,14 @@ contract PostDeploy is Script {
     vm.startBroadcast(deployerPrivateKey);
 
     // Deploy the ZugToken contract
-    uint256 maxSupply = 1_000_000 ether; // Example max supply
+    uint256 maxSupply = 1_000_000_000; // 1B tokens
+    uint256 maxSaleSupply = 10_000_000; // 10M tokens
     uint256 price = 0.00001 ether; // Example price per token
-    ZugToken zugToken = new ZugToken(maxSupply);
+    ZugToken zugToken = new ZugToken(maxSupply, maxSaleSupply);
 
     console.log("ZugToken deployed at:", address(zugToken));
+    console.log("ZugToken max supply:", maxSupply);
+    console.log("ZugToken max sale supply:", maxSaleSupply);
 
     // Initialize ZugToken settings
     zugToken.setTreasury(treasuryAddress);

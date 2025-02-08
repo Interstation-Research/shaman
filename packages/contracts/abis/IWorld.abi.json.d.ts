@@ -142,7 +142,7 @@ declare const abi: [
         "internalType": "uint256"
       },
       {
-        "name": "metadataURI",
+        "name": "metadata",
         "type": "string",
         "internalType": "string"
       }
@@ -194,34 +194,6 @@ declare const abi: [
         "name": "amount",
         "type": "uint256",
         "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
-    "name": "executeShaman",
-    "inputs": [
-      {
-        "name": "shamanId",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      },
-      {
-        "name": "cost",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "target",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
       }
     ],
     "outputs": [],
@@ -765,6 +737,34 @@ declare const abi: [
         "name": "encodedArgs",
         "type": "bytes",
         "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "logShamanOperation",
+    "inputs": [
+      {
+        "name": "shamanId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "cost",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "logMetadata",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "outputs": [],
@@ -1446,7 +1446,7 @@ declare const abi: [
         "internalType": "bytes32"
       },
       {
-        "name": "metadataURI",
+        "name": "metadata",
         "type": "string",
         "internalType": "string"
       }

@@ -68,20 +68,37 @@ export function getSystemCalls({
   };
 
   const purchase = async (quantity: bigint) => {
+    const price = await getPrice(quantity);
+
     await tokenContract.simulate.buy([account.address, quantity], {
+      chain,
       account: account.address,
+      value: price,
     });
 
     const hash = await tokenContract.write.buy([account.address, quantity], {
       chain,
       account,
+      value: price,
     });
 
     return waitForTransaction(hash);
   };
 
+  const getPrice = async (amount: bigint): Promise<bigint> => {
+    return (await tokenContract.read.getPrice([amount])) as bigint;
+  };
+
+  const getTokenSupply = async (): Promise<bigint> => {
+    return (await tokenContract.read.totalSupply()) as bigint;
+  };
+
   const getBalanceOf = async (address: Hex): Promise<bigint> => {
     return (await tokenContract.read.balanceOf([address])) as bigint;
+  };
+
+  const getTokenAddress = async (): Promise<Hex> => {
+    return (await worldContract.read.getTokenAddress()) as Hex;
   };
 
   return {
@@ -90,5 +107,8 @@ export function getSystemCalls({
     cancelShaman,
     purchase,
     getBalanceOf,
+    getPrice,
+    getTokenAddress,
+    getTokenSupply,
   };
 }

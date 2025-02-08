@@ -3,6 +3,8 @@
 import { Copy, MoreHorizontal, Plus, Trash2, Webhook, Zap } from 'lucide-react';
 
 import Link from 'next/link';
+import { usePrivy } from '@privy-io/react-auth';
+import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +24,8 @@ import {
 import { useShamans } from '@/hooks/use-shamans';
 
 export function NavShamans() {
+  const { user, login } = usePrivy();
+  const router = useRouter();
   const { isMobile } = useSidebar();
   const { data: shamans } = useShamans();
 
@@ -66,11 +70,10 @@ export function NavShamans() {
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <Link href="/new">
-              <Plus />
-              <span>New Shaman</span>
-            </Link>
+          <SidebarMenuButton
+            onClick={() => (user ? router.push('/new') : login())}>
+            <Plus />
+            <span>New Shaman</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

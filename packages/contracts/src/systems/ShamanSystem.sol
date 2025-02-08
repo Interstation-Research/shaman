@@ -143,6 +143,24 @@ contract ShamanSystem is BaseSystem {
     ShamanLogs.setCreatedAt(logId, block.timestamp);
   }
 
+  function getShamanMetadata(
+    bytes32 shamanId
+  ) public view returns (string memory) {
+    return Shamans.getMetadataURI(shamanId);
+  }
+
+  function getShamanBalance(bytes32 shamanId) public view returns (uint256) {
+    return Shamans.getBalance(shamanId);
+  }
+
+  function getShamanActive(bytes32 shamanId) public view returns (bool) {
+    return Shamans.getActive(shamanId);
+  }
+
+  function getShamanCreator(bytes32 shamanId) public view returns (address) {
+    return Shamans.getCreator(shamanId);
+  }
+
   function getTokenAddress() public view returns (address) {
     return address(_token());
   }

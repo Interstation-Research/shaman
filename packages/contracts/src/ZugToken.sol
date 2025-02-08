@@ -77,4 +77,8 @@ contract ZugToken is IZugToken, ERC20, AccessControl {
     require(treasury != address(0), "ZugToken: treasury not set");
     payable(treasury).transfer(address(this).balance);
   }
+
+  function getPrice(uint256 amount) public view returns (uint256) {
+    return amount * price;
+  }
 }

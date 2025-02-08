@@ -26,7 +26,7 @@ contract PostDeploy is Script {
 
     // Deploy the ZugToken contract
     uint256 maxSupply = 1_000_000 ether; // Example max supply
-    uint256 price = 0.01 ether; // Example price per token
+    uint256 price = 0.00001 ether; // Example price per token
     ZugToken zugToken = new ZugToken(maxSupply);
 
     console.log("ZugToken deployed at:", address(zugToken));

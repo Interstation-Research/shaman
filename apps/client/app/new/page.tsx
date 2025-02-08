@@ -7,6 +7,7 @@ import * as z from 'zod';
 import { ArrowRight, Webhook } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
 import { useRouter } from 'next/navigation';
+import { usePrivy, WalletWithMetadata } from '@privy-io/react-auth';
 import {
   SidebarInset,
   SidebarProvider,
@@ -50,7 +51,6 @@ import {
 import { useMUD } from '@/contexts/mud-context';
 import { AlertDialogPaywall } from '@/components/alert-dialog-paywall';
 import { useZugBalance } from '@/hooks/use-zug-balance';
-import { usePrivy, WalletWithMetadata } from '@privy-io/react-auth';
 
 const formSchema = z.object({
   prompt: z.string().min(16, {

@@ -9,9 +9,9 @@ pragma solidity >=0.8.24;
  * @dev This interface is automatically generated from the corresponding system contract. Do not edit manually.
  */
 interface IShamanSystem {
-  function createShaman(uint256 initialDeposit, string memory metadataURI) external;
+  function createShaman(uint256 initialDeposit, string memory metadata) external;
 
-  function updateShamanMetadata(bytes32 shamanId, string memory metadataURI) external;
+  function updateShamanMetadata(bytes32 shamanId, string memory metadata) external;
 
   function cancelShaman(bytes32 shamanId) external;
 

@@ -18,7 +18,7 @@
       "abi": [
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
         "function cancelShaman(bytes32 shamanId)",
-        "function createShaman(uint256 initialDeposit, string metadataURI)",
+        "function createShaman(uint256 initialDeposit, string metadata)",
         "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
         "function getShamanActive(bytes32 shamanId) view returns (bool)",
@@ -26,13 +26,13 @@
         "function getShamanCreator(bytes32 shamanId) view returns (address)",
         "function getShamanMetadata(bytes32 shamanId) view returns (string)",
         "function getTokenAddress() view returns (address)",
-        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
+        "function updateShamanMetadata(bytes32 shamanId, string metadata)",
         "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ],
       "worldAbi": [
         "event ShamanCreated(bytes32 indexed shamanId, address indexed creator)",
         "function cancelShaman(bytes32 shamanId)",
-        "function createShaman(uint256 initialDeposit, string metadataURI)",
+        "function createShaman(uint256 initialDeposit, string metadata)",
         "function depositShaman(bytes32 shamanId, uint256 amount)",
         "function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes data)",
         "function getShamanActive(bytes32 shamanId) view returns (bool)",
@@ -40,10 +40,10 @@
         "function getShamanCreator(bytes32 shamanId) view returns (address)",
         "function getShamanMetadata(bytes32 shamanId) view returns (string)",
         "function getTokenAddress() view returns (address)",
-        "function updateShamanMetadata(bytes32 shamanId, string metadataURI)",
+        "function updateShamanMetadata(bytes32 shamanId, string metadata)",
         "function withdrawShaman(bytes32 shamanId, uint256 amount)"
       ]
     }
   ],
-  "createdAt": 1739034732882
+  "createdAt": 1739035456949
 }

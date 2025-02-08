@@ -7,8 +7,8 @@ import { Shamans, ShamanLogs } from "../src/codegen/index.sol";
 import { LogType } from "../src/codegen/common.sol";
 
 contract ShamanSystemTest is BaseTest {
-  string constant INITIAL_METADATA = "ipfs://QmTest1";
-  string constant UPDATED_METADATA = "ipfs://QmTest2";
+  string constant INITIAL_METADATA = "QmTest1";
+  string constant UPDATED_METADATA = "QmTest2";
 
   uint256 public constant INITIAL_MAX_SUPPLY = 1_000_000;
   uint256 public constant INITIAL_PRICE = 10;
@@ -29,7 +29,7 @@ contract ShamanSystemTest is BaseTest {
     assertEq(Shamans.getCreator(shamanId), creatorAlice);
     assertEq(Shamans.getActive(shamanId), true);
     assertEq(Shamans.getBalance(shamanId), initialDeposit);
-    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
+    assertEq(Shamans.getMetadata(shamanId), INITIAL_METADATA);
 
     // Verify the deposit transaction was logged
     bytes32 logId = keccak256(
@@ -47,7 +47,7 @@ contract ShamanSystemTest is BaseTest {
 
     // Try to create a shaman with empty metadata
     vm.prank(creatorAlice);
-    vm.expectRevert("Metadata URI cannot be empty");
+    vm.expectRevert("Metadata cannot be empty");
     world.createShaman(100, "");
     vm.stopPrank();
   }
@@ -70,7 +70,7 @@ contract ShamanSystemTest is BaseTest {
     vm.stopPrank();
 
     // Verify metadata was updated
-    assertEq(Shamans.getMetadataURI(shamanId), UPDATED_METADATA);
+    assertEq(Shamans.getMetadata(shamanId), UPDATED_METADATA);
   }
 
   function testUpdateShamanMetadataOnlyCreator() public {
@@ -92,7 +92,7 @@ contract ShamanSystemTest is BaseTest {
     vm.stopPrank();
 
     // Verify metadata was not updated
-    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
+    assertEq(Shamans.getMetadata(shamanId), INITIAL_METADATA);
   }
 
   function testUpdateShamanMetadataEmptyURI() public {
@@ -109,12 +109,12 @@ contract ShamanSystemTest is BaseTest {
 
     // Try to update with empty metadata
     vm.prank(creatorAlice);
-    vm.expectRevert("Metadata URI cannot be empty");
+    vm.expectRevert("Metadata cannot be empty");
     world.updateShamanMetadata(shamanId, "");
     vm.stopPrank();
 
     // Verify metadata was not updated
-    assertEq(Shamans.getMetadataURI(shamanId), INITIAL_METADATA);
+    assertEq(Shamans.getMetadata(shamanId), INITIAL_METADATA);
   }
 
   function testExecuteShaman() public {
@@ -152,10 +152,7 @@ contract ShamanSystemTest is BaseTest {
       abi.encodePacked(shamanId, block.timestamp, block.prevrandao)
     );
     assertEq(ShamanLogs.getShamanId(logId), shamanId);
-    assertEq(
-      uint256(ShamanLogs.getLogType(logId)),
-      uint256(LogType.Execution)
-    );
+    assertEq(uint256(ShamanLogs.getLogType(logId)), uint256(LogType.Execution));
     assertEq(ShamanLogs.getAmount(logId), cost);
     assertEq(ShamanLogs.getSuccess(logId), true);
   }

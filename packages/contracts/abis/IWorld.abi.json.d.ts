@@ -142,7 +142,7 @@ declare const abi: [
         "internalType": "uint256"
       },
       {
-        "name": "metadataURI",
+        "name": "metadata",
         "type": "string",
         "internalType": "string"
       }
@@ -1446,7 +1446,7 @@ declare const abi: [
         "internalType": "bytes32"
       },
       {
-        "name": "metadataURI",
+        "name": "metadata",
         "type": "string",
         "internalType": "string"
       }

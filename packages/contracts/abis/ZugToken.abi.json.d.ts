@@ -3,7 +3,12 @@ declare const abi: [
     "type": "constructor",
     "inputs": [
       {
-        "name": "_maxSupply",
+        "name": "maxSupply_",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxSaleSupply_",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -229,6 +234,19 @@ declare const abi: [
   },
   {
     "type": "function",
+    "name": "maxSaleSupply",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "maxSupply",
     "inputs": [],
     "outputs": [
@@ -335,10 +353,23 @@ declare const abi: [
   },
   {
     "type": "function",
+    "name": "setMaxSaleSupply",
+    "inputs": [
+      {
+        "name": "maxSaleSupply_",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "setMaxSupply",
     "inputs": [
       {
-        "name": "_maxSupply",
+        "name": "maxSupply_",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -413,6 +444,19 @@ declare const abi: [
         "name": "",
         "type": "string",
         "internalType": "string"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "totalSaleSupply",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"

@@ -25,7 +25,7 @@ export default defineWorld({
         createdAt: "uint256",
         active: "bool",
         balance: "uint256", // track $SHAMAN token balance
-        metadataURI: "string", // URL to JSON containing shaman name, prompt, and script
+        metadata: "string", // IPFS CID containing shaman name, prompt, and script
       },
       key: ["shamanId"],
     },

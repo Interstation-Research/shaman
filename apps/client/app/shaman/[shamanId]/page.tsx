@@ -90,7 +90,8 @@ const chartConfig = {
 export default function Page() {
   const { shamanId } = useParams();
   const { data: shaman } = useShaman(shamanId as string);
-  const { openAddBalance, openWithdrawBalance } = useDialogContext();
+  const { openAddBalance, openWithdrawBalance, openTrigger, openDelete } =
+    useDialogContext();
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -256,11 +257,17 @@ export default function Page() {
                   )}
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
-                  <Button className="w-full" variant="outline">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => openTrigger(true)}>
                     <Zap />
                     Trigger
                   </Button>
-                  <Button className="w-full" variant="destructive">
+                  <Button
+                    className="w-full"
+                    variant="destructive"
+                    onClick={() => openDelete(true)}>
                     <Trash2 />
                     Delete
                   </Button>

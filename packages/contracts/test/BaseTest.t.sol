@@ -8,7 +8,6 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { ShamanConfig, Shamans, Roles } from "../src/codegen/index.sol";
 import { RoleType } from "../src/codegen/common.sol";
 import { IZugToken } from "../src/IZugToken.sol";
-import { MockContract } from "./mocks/MockContract.sol";
 contract BaseTest is MudTest, GasReporter {
   // Load the private key from the `PRIVATE_KEY` environment variable (in .env)
   uint256 internal deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -36,9 +35,6 @@ contract BaseTest is MudTest, GasReporter {
 
     // Fetch contract addresses from the world
     token = IZugToken(ShamanConfig.getTokenAddress());
-
-    // Deploy a mock contract for calldata execution
-    mockContract = address(new MockContract());
 
     // Initialize test accounts
     creatorAlice = makeAddr("alice");

@@ -15,7 +15,7 @@ interface IShamanSystem {
 
   function cancelShaman(bytes32 shamanId) external;
 
-  function executeShaman(bytes32 shamanId, uint256 cost, address target, bytes memory data) external;
+  function logShamanOperation(bytes32 shamanId, uint256 cost, string memory logMetadata, bool success) external;
 
   function depositShaman(bytes32 shamanId, uint256 amount) external;
 

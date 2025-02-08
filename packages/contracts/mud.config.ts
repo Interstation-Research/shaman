@@ -40,6 +40,7 @@ export default defineWorld({
         amount: "uint256", // amount in $SHAMAN
         success: "bool",
         createdAt: "uint256",
+        logMetadata: "string", // IPFS CID containing execution results
       },
       key: ["logId"],
     },

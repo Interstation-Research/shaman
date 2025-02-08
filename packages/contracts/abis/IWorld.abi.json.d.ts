@@ -201,34 +201,6 @@ declare const abi: [
   },
   {
     "type": "function",
-    "name": "executeShaman",
-    "inputs": [
-      {
-        "name": "shamanId",
-        "type": "bytes32",
-        "internalType": "bytes32"
-      },
-      {
-        "name": "cost",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "target",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "data",
-        "type": "bytes",
-        "internalType": "bytes"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "getDynamicField",
     "inputs": [
       {
@@ -765,6 +737,34 @@ declare const abi: [
         "name": "encodedArgs",
         "type": "bytes",
         "internalType": "bytes"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "logShamanOperation",
+    "inputs": [
+      {
+        "name": "shamanId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "cost",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "logMetadata",
+        "type": "string",
+        "internalType": "string"
+      },
+      {
+        "name": "success",
+        "type": "bool",
+        "internalType": "bool"
       }
     ],
     "outputs": [],

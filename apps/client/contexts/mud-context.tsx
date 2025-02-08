@@ -90,42 +90,32 @@ export const MUDProvider = ({ children }: Props) => {
       walletClients?.length,
     ],
     queryFn: async () => {
-      try {
-        if (!mudState) return;
+      if (!mudState) return;
 
-        const activeMudCalls = await getMUDCalls(
-          mudState,
-          publicClient,
-          activeWalletClient.data as WalletClient
-        );
+      const activeMudCalls = await getMUDCalls(
+        mudState,
+        publicClient,
+        activeWalletClient.data as WalletClient
+      );
 
-        console.log(activeMudCalls);
+      const walletsMudCalls = await Promise.all(
+        (walletClients || []).map((client) =>
+          getMUDCalls(mudState, publicClient, client)
+        )
+      );
 
-        const walletsMudCalls = await Promise.all(
-          (walletClients || []).map((client) =>
-            getMUDCalls(mudState, publicClient, client)
-          )
-        );
+      const walletMap = walletsMudCalls.reduce(
+        (acc, mudCalls) => ({
+          ...acc,
+          [mudCalls.client.wallet.name]: mudCalls,
+        }),
+        {} as Record<string, MUDCallsResult>
+      );
 
-        const walletMap = walletsMudCalls.reduce(
-          (acc, mudCalls) => ({
-            ...acc,
-            [mudCalls.client.wallet.name]: mudCalls,
-          }),
-          {} as Record<string, MUDCallsResult>
-        );
-
-        console.log(walletMap);
-
-        return {
-          active: activeMudCalls || walletsMudCalls[0],
-          embedded: walletMap['privy'] || activeMudCalls,
-        };
-      } catch (error) {
-        console.error(error);
-
-        return null;
-      }
+      return {
+        active: activeMudCalls || walletsMudCalls[0],
+        embedded: walletMap['privy'] || activeMudCalls,
+      };
     },
     enabled: !!mudState,
     refetchOnWindowFocus: false,

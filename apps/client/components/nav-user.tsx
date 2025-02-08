@@ -8,7 +8,7 @@ import {
   WalletWithMetadata,
 } from '@privy-io/react-auth';
 import { useState } from 'react';
-import { formatEther } from 'viem';
+import { Chain, formatEther } from 'viem';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { useWalletDelegation } from '@/hooks/use-wallet-delegation';
@@ -42,6 +42,7 @@ import {
 } from '@/components/ui/dialog';
 import { useMUD } from '@/contexts/mud-context';
 import { useZugBalance } from '@/hooks/use-zug-balance';
+import { chain } from '@/mud/supportedChains';
 
 export function NavUser() {
   const mud = useMUD();
@@ -137,7 +138,9 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => fundWallet(address || '')}>
+                  onClick={() =>
+                    fundWallet(address || '', { chain: chain as Chain })
+                  }>
                   <Wallet />
                   Fund Wallet
                 </DropdownMenuItem>

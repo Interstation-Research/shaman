@@ -68,11 +68,11 @@ export function getSystemCalls({
   };
 
   const purchase = async (quantity: bigint) => {
-    await tokenContract.simulate.purchase([quantity], {
+    await tokenContract.simulate.buy([account.address, quantity], {
       account: account.address,
     });
 
-    const hash = await tokenContract.write.purchase([quantity], {
+    const hash = await tokenContract.write.buy([account.address, quantity], {
       chain,
       account,
     });

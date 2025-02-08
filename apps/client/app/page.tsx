@@ -50,7 +50,7 @@ export default function Page() {
                   <p>Automate and orchestrate your onchain workflows.</p>
                 </CardContent>
                 <CardFooter className="flex-col items-start gap-2 text-sm mt-auto">
-                  <Button asChild className="w-full" variant="outline">
+                  <Button asChild className="w-full" variant="default">
                     <Link href="/new">
                       <Plus />
                       Create Shaman

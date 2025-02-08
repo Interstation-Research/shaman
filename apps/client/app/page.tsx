@@ -81,9 +81,7 @@ export default function Page() {
                         </span>
                         <span className="text-sm">
                           <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
-                            <span className="font-mono">
-                              {shaman.metadataURI}
-                            </span>
+                            <span className="font-mono">{shaman.metadata}</span>
                           </code>
                         </span>
                       </div>

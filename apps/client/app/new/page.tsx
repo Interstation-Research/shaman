@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -48,6 +48,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useMUD } from '@/contexts/mud-context';
+import { AlertDialogPaywall } from '@/components/alert-dialog-paywall';
+import { useZugBalance } from '@/hooks/use-zug-balance';
+import { usePrivy, WalletWithMetadata } from '@privy-io/react-auth';
 
 const formSchema = z.object({
   prompt: z.string().min(16, {
@@ -66,6 +69,29 @@ export default function Page() {
   const [ipfs, setIpfs] = useState('');
   const [balance, setBalance] = useState(1);
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const { user } = usePrivy();
+  const embeddedWallet = user?.linkedAccounts?.find(
+    (account) =>
+      account.type === 'wallet' && account.connectorType === 'embedded'
+  ) as WalletWithMetadata;
+  const address = embeddedWallet?.address;
+  const {
+    data: zugBalance,
+    isLoading: isZugBalanceLoading,
+    isFetching: isZugBalanceFetching,
+  } = useZugBalance(address as `0x${string}`);
+
+  useEffect(() => {
+    if (
+      user &&
+      !isZugBalanceLoading &&
+      !isZugBalanceFetching &&
+      zugBalance === 0n
+    ) {
+      setOpen(true);
+    }
+  }, [user, zugBalance, isZugBalanceLoading, isZugBalanceFetching]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,7 +101,7 @@ export default function Page() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
 
     try {
@@ -105,9 +131,9 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  async function handleDeploy() {
+  const handleDeploy = async () => {
     setIsDeploying(true);
 
     try {
@@ -132,7 +158,7 @@ export default function Page() {
     } finally {
       setIsDeploying(false);
     }
-  }
+  };
 
   return (
     <SidebarProvider>
@@ -155,7 +181,7 @@ export default function Page() {
           <div className="grid auto-rows-min gap-4 md:grid-cols-2">
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(handleSubmit)}
                 className="space-y-4">
                 <FormField
                   control={form.control}
@@ -274,6 +300,7 @@ export default function Page() {
           </div>
         </div>
       </SidebarInset>
+      <AlertDialogPaywall open={open} onOpenChange={setOpen} />
     </SidebarProvider>
   );
 }

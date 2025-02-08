@@ -47,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useShaman } from '@/hooks/use-shaman';
+import { useDialogContext } from '@/contexts/dialog-context';
 
 const chartData = [
   { day: 'Monday', executions: 186 },
@@ -89,7 +90,7 @@ const chartConfig = {
 export default function Page() {
   const { shamanId } = useParams();
   const { data: shaman } = useShaman(shamanId as string);
-
+  const { openAddBalance, openWithdrawBalance } = useDialogContext();
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -122,11 +123,17 @@ export default function Page() {
                   </p>
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
-                  <Button className="w-full" variant="default">
+                  <Button
+                    className="w-full"
+                    variant="default"
+                    onClick={() => openAddBalance(true)}>
                     <Plus />
                     Add Balance
                   </Button>
-                  <Button className="w-full" variant="outline">
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => openWithdrawBalance(true)}>
                     <Minus />
                     Withdraw Balance
                   </Button>

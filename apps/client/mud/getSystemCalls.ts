@@ -112,6 +112,49 @@ export function getSystemCalls({
     return waitForTransaction(hash);
   };
 
+  const addBalance = async (shamanId: Hex, amount: bigint) => {
+    await tokenContract.simulate.approve([worldContract.address, amount], {
+      chain,
+      account: account.address,
+    });
+
+    const approveTx = await tokenContract.write.approve(
+      [worldContract.address, amount],
+      {
+        chain,
+        account: account.address,
+      }
+    );
+
+    await waitForTransaction(approveTx);
+
+    await worldContract.simulate.depositShaman([shamanId, amount], {
+      chain,
+      account: account.address,
+    });
+
+    const hash = await worldContract.write.depositShaman([shamanId, amount], {
+      chain,
+      account,
+    });
+
+    return waitForTransaction(hash);
+  };
+
+  const withdrawBalance = async (shamanId: Hex, amount: bigint) => {
+    await worldContract.simulate.withdrawShaman([shamanId, amount], {
+      chain,
+      account: account.address,
+    });
+
+    const hash = await worldContract.write.withdrawShaman([shamanId, amount], {
+      chain,
+      account,
+    });
+
+    return waitForTransaction(hash);
+  };
+
   const cancelShaman = async (shamanId: Hex) => {
     await worldContract.simulate.cancelShaman([shamanId], {
       account: account.address,
@@ -168,5 +211,7 @@ export function getSystemCalls({
     getPrice,
     getTokenAddress,
     getTokenSupply,
+    addBalance,
+    withdrawBalance,
   };
 }

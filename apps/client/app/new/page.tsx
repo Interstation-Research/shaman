@@ -178,88 +178,105 @@ export default function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="prompt"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Shaman Interface</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter your prompt here"
-                          rows={18}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="network"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Network</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create Shaman</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Form {...form}>
+                    <form
+                      onSubmit={form.handleSubmit(handleSubmit)}
+                      className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="prompt"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Shaman Interface</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Enter your prompt here"
+                                rows={18}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="network"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Network</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select network" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="arbitrumSepolia">
+                                  Arbitrum Sepolia (Testnet)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormItem>
+                        <FormLabel>$ZUG Balance</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select network" />
-                          </SelectTrigger>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={balance}
+                            onChange={(e) =>
+                              setBalance(parseInt(e.target.value))
+                            }
+                          />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="arbitrumSepolia">
-                            Arbitrum Sepolia (Testnet)
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormItem>
-                  <FormLabel>$ZUG Balance</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={balance}
-                      onChange={(e) => setBalance(parseInt(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-                <Button className="w-full" type="submit" disabled={isLoading}>
-                  {isLoading ? 'Generating...' : 'Generate Shaman Code'}
-                  <ArrowRight />
-                </Button>
-              </form>
-            </Form>
-            <div className="flex flex-col gap-4 h-full p-2">
-              <Card className="flex-1 shadow-lg flex flex-col">
+                        <FormMessage />
+                      </FormItem>
+                      <Button
+                        className="w-full"
+                        type="submit"
+                        disabled={isLoading}>
+                        {isLoading ? 'Generating...' : 'Generate Shaman Code'}
+                        <ArrowRight />
+                      </Button>
+                    </form>
+                  </Form>
+                </CardContent>
+              </Card>
+            </div>
+            <div className="flex flex-col gap-4">
+              <Card className="flex-1">
                 <CardHeader>
                   <CardTitle>Shaman Code</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 max-h-[70vh] min-h-0">
+                <CardContent className="flex-1 min-h-0">
                   {code ? (
-                    <div className="flex flex-col h-full overflow-y-auto">
+                    <div className="flex flex-col h-full">
                       <Highlight
                         theme={themes.nightOwl}
                         code={code}
                         language="tsx">
                         {({ style, tokens, getLineProps, getTokenProps }) => (
                           <pre
-                            className="overflow-auto w-full p-4 text-sm"
-                            style={style}>
+                            className="overflow-x-auto w-full p-4 text-sm whitespace-pre"
+                            style={{ ...style, maxWidth: '100%' }}>
                             {tokens.map((line, i) => (
-                              <div key={i} {...getLineProps({ line })}>
+                              <div
+                                key={i}
+                                {...getLineProps({ line })}
+                                className="whitespace-pre">
                                 {line.map((token, key) => (
                                   <span
                                     key={key}
@@ -292,7 +309,7 @@ export default function Page() {
                     className="w-full"
                     disabled={isDeploying || !code}>
                     <Webhook />
-                    {isDeploying ? 'Deploying...' : `Deploy Shaman`}
+                    {isDeploying ? 'Deploying...' : 'Deploy Shaman'}
                   </Button>
                 </CardFooter>
               </Card>

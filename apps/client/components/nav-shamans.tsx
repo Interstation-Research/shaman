@@ -1,10 +1,10 @@
 'use client';
 
-import { Copy, MoreHorizontal, Plus, Trash2, Webhook, Zap } from 'lucide-react';
+import { MoreHorizontal, Plus, Trash2, Webhook, Zap } from 'lucide-react';
 
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,6 +29,7 @@ export function NavShamans() {
   const router = useRouter();
   const { isMobile } = useSidebar();
   const { data: shamans } = useShamans();
+  const { shamanId } = useParams();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -36,7 +37,7 @@ export function NavShamans() {
       <SidebarMenu>
         {shamans.map((item) => (
           <SidebarMenuItem key={item.shamanId}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild isActive={shamanId === item.shamanId}>
               <Link href={`/shaman/${item.shamanId}`}>
                 <Webhook />
                 <span>{trimHash(item.shamanId, 4)}</span>
@@ -57,14 +58,10 @@ export function NavShamans() {
                   <Zap className="text-muted-foreground" />
                   <span>Trigger</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Copy className="text-muted-foreground" />
-                  <span>Clone</span>
-                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Cancel</span>
+                <DropdownMenuItem className="text-red-500">
+                  <Trash2 className="text-red-500" />
+                  <span>Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

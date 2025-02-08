@@ -44,6 +44,8 @@ import {
 import { useMUD } from '@/contexts/mud-context';
 import { useZugBalance } from '@/hooks/use-zug-balance';
 import { chain } from '@/mud/supportedChains';
+import { useZugPrice } from '@/hooks/use-zug-price';
+import { useZugAddress } from '@/hooks/use-zug-address';
 
 export function NavUser() {
   const mud = useMUD();
@@ -58,8 +60,9 @@ export function NavUser() {
   const { data: balance } = useBalance({ address: address as `0x${string}` });
   const [loading, setLoading] = useState(false);
   const { data: zugBalance } = useZugBalance(address as `0x${string}`);
-  const [quantity, setQuantity] = useState(0);
-  const [price] = useState(0n);
+  const [quantity, setQuantity] = useState(10);
+  const { data: price } = useZugPrice(BigInt(quantity));
+  const { data: zugAddress } = useZugAddress();
 
   useWalletDelegation();
 
@@ -170,20 +173,32 @@ export function NavUser() {
         <DialogHeader>
           <DialogTitle>Make a Purchase</DialogTitle>
           <DialogDescription>
-            Each $ZUG is a Unit of Work. $ZUG is a utility token.
+            <span className="block mb-2">
+              $ZUG is a pure utility token that represents Units of Work in our
+              ecosystem. As an ERC-20 token with a fixed supply of 1 billion,
+              $ZUG enables you to participate in and contribute to our platform.
+            </span>
+            <span className="block mb-2">
+              As units gets used, the supply of $ZUG decreases.
+            </span>
+            <span className="block mb-2">
+              $ZUG Contract Address:{' '}
+              <span className="font-bold">{zugAddress}</span>
+            </span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
+          <div className="grid grid-cols-2 items-center gap-4">
             <Label htmlFor="quantity" className="text-right">
               Quantity
             </Label>
             <Input
               id="quantity"
               value={quantity}
+              max={1000000000}
               onChange={(e) => setQuantity(Number(e.target.value))}
               type="number"
-              className="col-span-3 text-right"
+              className="text-right"
             />
           </div>
         </div>
@@ -191,7 +206,7 @@ export function NavUser() {
           <Label htmlFor="price" className="text-right">
             Total
           </Label>
-          <p className="text-right mr-3">{formatEther(price)} ETH</p>
+          <p className="text-right">{formatEther(price || 0n)} ETH</p>
         </div>
         <DialogFooter>
           <Button disabled={loading} onClick={handlePurchase} type="submit">

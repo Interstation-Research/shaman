@@ -53,21 +53,24 @@ export function DialogBuyZug(props: DialogProps) {
         <DialogHeader>
           <DialogTitle>Make a Purchase</DialogTitle>
           <DialogDescription>
-            <span className="block mb-2">
-              $ZUG is a pure utility token that represents Units of Work in our
-              ecosystem. As an ERC-20 token with a fixed supply of 1 billion,
-              $ZUG enables you to participate in and contribute to our platform.
+            <span className="block mt-1 mb-2">
+              $ZUG is a utility token used to purchase Units of Work in our
+              ecosystem. While $ZUG has a total supply of 1 billion tokens, only
+              10M tokens are available during this beta phase.
             </span>
             <span className="block mb-2">
-              As units gets used, the supply of $ZUG decreases.
+              As units gets used, the available supply of $ZUG decreases.
             </span>
             <span className="block mb-2">
+              Available Supply: <span className="font-bold">10,000,000</span>
+            </span>
+            <span className="block mb-4">
               $ZUG Contract Address:{' '}
               <span className="font-bold">{zugAddress}</span>
             </span>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-2 py-4">
+        <div className="grid gap-2 py-2">
           <div className="grid grid-cols-2 items-center gap-4">
             <Label htmlFor="quantity" className="text-right">
               Quantity

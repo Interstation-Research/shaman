@@ -63,8 +63,8 @@ export function NavUser() {
                     {trimHash(address)}
                   </span>
                   <span className="truncate text-xs">
-                    {formatEther(balance?.value || 0n)} ETH | {zugBalance || 0}{' '}
-                    $ZUG
+                    {zugBalance || 0} ZUG | {formatEther(balance?.value || 0n)}{' '}
+                    ETH
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
@@ -93,8 +93,8 @@ export function NavUser() {
                     {trimHash(address)}
                   </span>
                   <span className="truncate text-xs">
-                    {formatEther(balance?.value || 0n)} ETH | {zugBalance || 0}{' '}
-                    $ZUG
+                    {zugBalance || 0} ZUG | {formatEther(balance?.value || 0n)}{' '}
+                    ETH
                   </span>
                 </div>
               </div>
@@ -107,7 +107,7 @@ export function NavUser() {
                   fundWallet(address || '', { chain: chain as Chain })
                 }>
                 <Wallet />
-                Fund Wallet
+                Fund Shaman Wallet
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuGroup>

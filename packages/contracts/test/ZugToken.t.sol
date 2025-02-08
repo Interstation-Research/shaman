@@ -37,6 +37,46 @@ contract ZugTokenTest is Test {
     assertEq(token.treasury(), treasury);
     assertEq(token.saleActive(), false);
     assertEq(token.totalSupply(), 0);
+    assertEq(token.decimals(), 0);
+  }
+
+  function testTokenDecimals() public {
+    // Test that token has 0 decimals
+    assertEq(token.decimals(), 0);
+
+    // Test minting and transferring with whole numbers
+    vm.startPrank(admin);
+    token.mint(alice, 100); // Mint 100 tokens (no decimals)
+    vm.stopPrank();
+
+    assertEq(token.balanceOf(alice), 100);
+
+    // Test transfer with whole numbers
+    vm.startPrank(alice);
+    token.transfer(bob, 50); // Transfer 50 tokens
+    vm.stopPrank();
+
+    assertEq(token.balanceOf(alice), 50);
+    assertEq(token.balanceOf(bob), 50);
+  }
+
+  function testBuyingWithZeroDecimals() public {
+    vm.startPrank(admin);
+    token.setSaleActive(true);
+    token.setPrice(1 ether); // Set price to 1 ETH per token
+    vm.stopPrank();
+
+    uint256 amount = 5; // Buy 5 whole tokens
+    uint256 cost = amount * 1 ether;
+
+    vm.deal(alice, cost);
+
+    vm.startPrank(alice);
+    token.buy{ value: cost }(alice, amount);
+    vm.stopPrank();
+
+    assertEq(token.balanceOf(alice), 5); // Should have exactly 5 tokens
+    assertEq(address(token).balance, cost);
   }
 
   function testMintingByMinter() public {

@@ -10,12 +10,15 @@ contract ShamanSystemTest is BaseTest {
   string constant INITIAL_METADATA = "ipfs://QmTest1";
   string constant UPDATED_METADATA = "ipfs://QmTest2";
 
+  uint256 public constant INITIAL_MAX_SUPPLY = 1_000_000;
+  uint256 public constant INITIAL_PRICE = 10;
+
   function testCreateShaman() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Alice creates a shaman with an initial deposit of 100 $ZUG
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -39,22 +42,22 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testCreateShamanWithEmptyMetadata() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Try to create a shaman with empty metadata
     vm.prank(creatorAlice);
     vm.expectRevert("Metadata URI cannot be empty");
-    world.createShaman(100 ether, "");
+    world.createShaman(100, "");
     vm.stopPrank();
   }
 
   function testUpdateShamanMetadata() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create initial shaman
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -71,11 +74,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testUpdateShamanMetadataOnlyCreator() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create initial shaman
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -93,11 +96,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testUpdateShamanMetadataEmptyURI() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create initial shaman
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -115,11 +118,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testExecuteShaman() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Alice creates a shaman with an initial deposit of 100 $ZUG
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -127,12 +130,12 @@ contract ShamanSystemTest is BaseTest {
     );
 
     // Fund the shaman with additional $ZUG
-    uint256 additionalDeposit = 50 ether;
+    uint256 additionalDeposit = 50;
     _depositShaman(creatorAlice, shamanId, additionalDeposit);
 
     // Execute a transaction on the mock contract
     bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42);
-    uint256 cost = 10 ether;
+    uint256 cost = 10;
 
     vm.prank(signerAddress); // Operator executes the transaction
     world.executeShaman(shamanId, cost, address(mockContract), data);
@@ -158,11 +161,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testCancelShamanByCreator() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create shaman with initial deposit
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -197,11 +200,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testCancelShamanUnauthorized() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create shaman with initial deposit
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -220,11 +223,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testCancelInactiveShaman() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create and cancel shaman
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -243,11 +246,11 @@ contract ShamanSystemTest is BaseTest {
   }
 
   function testExecuteShamanUnauthorized() public {
-    _mintTokens(creatorAlice, 10000 ether);
-    _increaseAllowance(creatorAlice, 10000 ether);
+    _mintTokens(creatorAlice, 10000);
+    _increaseAllowance(creatorAlice, 10000);
 
     // Create shaman
-    uint256 initialDeposit = 100 ether;
+    uint256 initialDeposit = 100;
     bytes32 shamanId = _createShaman(
       creatorAlice,
       initialDeposit,
@@ -256,7 +259,7 @@ contract ShamanSystemTest is BaseTest {
 
     // Try to execute as non-operator
     bytes memory data = abi.encodeWithSignature("mockFunction(uint256)", 42);
-    uint256 cost = 10 ether;
+    uint256 cost = 10;
 
     vm.prank(creatorBob);
     vm.expectRevert("Not operator");

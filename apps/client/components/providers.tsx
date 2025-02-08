@@ -7,6 +7,7 @@ import { arbitrumSepolia } from 'wagmi/chains';
 import { WagmiProvider } from '@privy-io/wagmi';
 import { http } from 'wagmi';
 import { ThemeProvider } from 'next-themes';
+import { LoadingScreen } from './loading-screen';
 import { MUDProvider } from '@/contexts/mud-context';
 import { DialogContextProvider } from '@/contexts/dialog-context';
 
@@ -36,7 +37,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <WagmiProvider config={config}>
           <MUDProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">
-              <DialogContextProvider>{children}</DialogContextProvider>
+              <DialogContextProvider>
+                <LoadingScreen>{children}</LoadingScreen>
+              </DialogContextProvider>
             </ThemeProvider>
           </MUDProvider>
         </WagmiProvider>

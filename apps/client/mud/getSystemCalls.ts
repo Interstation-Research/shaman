@@ -19,7 +19,7 @@ export function getSystemCalls({
   // shaman functions
   const createShaman = async (
     initialDeposit: bigint,
-    metadataURI: string
+    metadata: string
   ): Promise<Hex> => {
     await tokenContract.simulate.approve(
       [worldContract.address, initialDeposit],
@@ -39,12 +39,12 @@ export function getSystemCalls({
 
     await waitForTransaction(approveTx);
 
-    await worldContract.simulate.createShaman([initialDeposit, metadataURI], {
+    await worldContract.simulate.createShaman([initialDeposit, metadata], {
       account: account.address,
     });
 
     const hash = await worldContract.write.createShaman(
-      [initialDeposit, metadataURI],
+      [initialDeposit, metadata],
       {
         chain,
         account,
@@ -56,13 +56,13 @@ export function getSystemCalls({
     return logs[0].topics[1] as Hex;
   };
 
-  const updateShamanMetadata = async (shamanId: Hex, metadataURI: string) => {
-    await worldContract.simulate.updateShamanMetadata([shamanId, metadataURI], {
+  const updateShamanMetadata = async (shamanId: Hex, metadata: string) => {
+    await worldContract.simulate.updateShamanMetadata([shamanId, metadata], {
       account: account.address,
     });
 
     const hash = await worldContract.write.updateShamanMetadata(
-      [shamanId, metadataURI],
+      [shamanId, metadata],
       {
         chain,
         account,

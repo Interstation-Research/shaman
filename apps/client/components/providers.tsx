@@ -28,6 +28,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         embeddedWallets: {
           createOnLogin: 'all-users',
         },
+        defaultChain: arbitrumSepolia,
       }}>
       <QueryClientProvider client={queryClient}>
         <WagmiProvider config={config}>

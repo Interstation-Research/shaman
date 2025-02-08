@@ -155,6 +155,20 @@ export function getSystemCalls({
     return waitForTransaction(hash);
   };
 
+  const deleteShaman = async (shamanId: Hex) => {
+    await worldContract.simulate.cancelShaman([shamanId], {
+      chain,
+      account: account.address,
+    });
+
+    const hash = await worldContract.write.cancelShaman([shamanId], {
+      chain,
+      account,
+    });
+
+    return waitForTransaction(hash);
+  };
+
   const cancelShaman = async (shamanId: Hex) => {
     await worldContract.simulate.cancelShaman([shamanId], {
       account: account.address,
@@ -213,5 +227,6 @@ export function getSystemCalls({
     getTokenSupply,
     addBalance,
     withdrawBalance,
+    deleteShaman,
   };
 }

@@ -22,6 +22,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useShamans } from '@/hooks/use-shamans';
+import { trimHash } from '@/lib/utils';
 
 export function NavShamans() {
   const { user, login } = usePrivy();
@@ -38,7 +39,7 @@ export function NavShamans() {
             <SidebarMenuButton asChild>
               <Link href={`/shaman/${item.shamanId}`}>
                 <Webhook />
-                <span>{item.shamanId}</span>
+                <span>{trimHash(item.shamanId, 4)}</span>
               </Link>
             </SidebarMenuButton>
             <DropdownMenu>

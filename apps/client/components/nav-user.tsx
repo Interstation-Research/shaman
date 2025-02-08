@@ -9,6 +9,7 @@ import {
 } from '@privy-io/react-auth';
 import { useState } from 'react';
 import { Chain, formatEther } from 'viem';
+import { useBalance } from 'wagmi';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { useWalletDelegation } from '@/hooks/use-wallet-delegation';
@@ -54,6 +55,7 @@ export function NavUser() {
       account.type === 'wallet' && account.connectorType === 'embedded'
   ) as WalletWithMetadata;
   const address = embeddedWallet?.address;
+  const { data: balance } = useBalance({ address: address as `0x${string}` });
   const [loading, setLoading] = useState(false);
   const { data: zugBalance } = useZugBalance(address as `0x${string}`);
   const [quantity, setQuantity] = useState(0);
@@ -100,7 +102,8 @@ export function NavUser() {
                       {trimHash(address)}
                     </span>
                     <span className="truncate text-xs">
-                      Balance: {zugBalance || 0} $ZUG
+                      {formatEther(balance?.value || 0n)} ETH |{' '}
+                      {zugBalance || 0} $ZUG
                     </span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
@@ -129,7 +132,8 @@ export function NavUser() {
                       {trimHash(address)}
                     </span>
                     <span className="truncate text-xs">
-                      Balance: {zugBalance || 0} $ZUG
+                      {formatEther(balance?.value || 0n)} ETH |{' '}
+                      {zugBalance || 0} $ZUG
                     </span>
                   </div>
                 </div>

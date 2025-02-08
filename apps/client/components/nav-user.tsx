@@ -7,14 +7,10 @@ import {
   usePrivy,
   WalletWithMetadata,
 } from '@privy-io/react-auth';
-import { useState } from 'react';
 import { Chain, formatEther } from 'viem';
 import { useBalance } from 'wagmi';
-import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
 import { useWalletDelegation } from '@/hooks/use-wallet-delegation';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,25 +26,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { toast } from '@/hooks/use-toast';
 import { trimHash } from '@/lib/utils';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { useMUD } from '@/contexts/mud-context';
 import { useZugBalance } from '@/hooks/use-zug-balance';
 import { chain } from '@/mud/supportedChains';
-import { useZugPrice } from '@/hooks/use-zug-price';
-import { useZugAddress } from '@/hooks/use-zug-address';
+import { useDialogContext } from '@/contexts/dialog-context';
 
 export function NavUser() {
-  const mud = useMUD();
   const { isMobile } = useSidebar();
   const { fundWallet } = useFundWallet();
   const { user, login, logout } = usePrivy();
@@ -58,162 +41,91 @@ export function NavUser() {
   ) as WalletWithMetadata;
   const address = embeddedWallet?.address;
   const { data: balance } = useBalance({ address: address as `0x${string}` });
-  const [loading, setLoading] = useState(false);
   const { data: zugBalance } = useZugBalance(address as `0x${string}`);
-  const [quantity, setQuantity] = useState(10);
-  const { data: price } = useZugPrice(BigInt(quantity));
-  const { data: zugAddress } = useZugAddress();
+  const { openBuyZug } = useDialogContext();
 
   useWalletDelegation();
 
-  const handlePurchase = async () => {
-    setLoading(true);
-    try {
-      await mud?.calls.embedded?.systemCalls?.purchase(BigInt(quantity));
-
-      toast({
-        title: 'Success',
-        description: 'Purchase successful.',
-      });
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Error',
-        description: 'Something went wrong. Please try again.',
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <Dialog>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <DropdownMenu>
-            {user ? (
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <BoringAvatar name={address} variant="beam" />
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {trimHash(address)}
-                    </span>
-                    <span className="truncate text-xs">
-                      {formatEther(balance?.value || 0n)} ETH |{' '}
-                      {zugBalance || 0} $ZUG
-                    </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-            ) : (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          {user ? (
+            <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                onClick={login}>
-                <span className="truncate font-semibold">Connect Wallet</span>
-              </SidebarMenuButton>
-            )}
-            <DropdownMenuContent
-              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-              side={isMobile ? 'bottom' : 'right'}
-              align="end"
-              sideOffset={4}>
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <BoringAvatar name={address} variant="beam" />
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {trimHash(address)}
-                    </span>
-                    <span className="truncate text-xs">
-                      {formatEther(balance?.value || 0n)} ETH |{' '}
-                      {zugBalance || 0} $ZUG
-                    </span>
-                  </div>
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <BoringAvatar name={address} variant="beam" />
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {trimHash(address)}
+                  </span>
+                  <span className="truncate text-xs">
+                    {formatEther(balance?.value || 0n)} ETH | {zugBalance || 0}{' '}
+                    $ZUG
+                  </span>
                 </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() =>
-                    fundWallet(address || '', { chain: chain as Chain })
-                  }>
-                  <Wallet />
-                  Fund Wallet
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuGroup>
-                <DialogTrigger asChild>
-                  <DropdownMenuItem className="cursor-pointer">
-                    <Sparkles />
-                    Buy $ZUG
-                  </DropdownMenuItem>
-                </DialogTrigger>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer" onClick={logout}>
-                <LogOut />
-                Disconnect
+                <ChevronsUpDown className="ml-auto size-4" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+          ) : (
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              onClick={login}>
+              <span className="truncate font-semibold">Connect Wallet</span>
+            </SidebarMenuButton>
+          )}
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            side={isMobile ? 'bottom' : 'right'}
+            align="end"
+            sideOffset={4}>
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <BoringAvatar name={address} variant="beam" />
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">
+                    {trimHash(address)}
+                  </span>
+                  <span className="truncate text-xs">
+                    {formatEther(balance?.value || 0n)} ETH | {zugBalance || 0}{' '}
+                    $ZUG
+                  </span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() =>
+                  fundWallet(address || '', { chain: chain as Chain })
+                }>
+                <Wallet />
+                Fund Wallet
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </SidebarMenuItem>
-      </SidebarMenu>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Make a Purchase</DialogTitle>
-          <DialogDescription>
-            <span className="block mb-2">
-              $ZUG is a pure utility token that represents Units of Work in our
-              ecosystem. As an ERC-20 token with a fixed supply of 1 billion,
-              $ZUG enables you to participate in and contribute to our platform.
-            </span>
-            <span className="block mb-2">
-              As units gets used, the supply of $ZUG decreases.
-            </span>
-            <span className="block mb-2">
-              $ZUG Contract Address:{' '}
-              <span className="font-bold">{zugAddress}</span>
-            </span>
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-2 py-4">
-          <div className="grid grid-cols-2 items-center gap-4">
-            <Label htmlFor="quantity" className="text-right">
-              Quantity
-            </Label>
-            <Input
-              id="quantity"
-              value={quantity}
-              max={1000000000}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              type="number"
-              className="text-right"
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 items-center mb-4">
-          <Label htmlFor="price" className="text-right">
-            Total
-          </Label>
-          <p className="text-right">{formatEther(price || 0n)} ETH</p>
-        </div>
-        <DialogFooter>
-          <Button disabled={loading} onClick={handlePurchase} type="submit">
-            {loading ? 'Confirming...' : 'Confirm Purchase'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => openBuyZug(true)}>
+                <Sparkles />
+                Buy $ZUG
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={logout}>
+              <LogOut />
+              Disconnect
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
   );
 }

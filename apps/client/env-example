@@ -2,7 +2,19 @@
 NEXT_PUBLIC_CHAIN_ID=421614
 
 # RPC URLs
-NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc 
+NEXT_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL=your-rpc-url
+
+# Privy Authentication
+NEXT_PUBLIC_PRIVY_APP_ID=your_privy_app_id_here
+
+# API URLs
+NEXT_PUBLIC_INDEXER_URL=your-indexer-url
+NEXT_PUBLIC_SHAMAN_WORKER_API_URL=your-worker-url
 
 # OpenAI API Key
-OPENAI_API_KEY=
+OPENAI_API_KEY=your_openai_api_key_here
+
+# S3 Configuration
+S3_KEY=your_s3_key_here
+S3_SECRET=your_s3_secret_here
+S3_BUCKET=your_bucket_name_here

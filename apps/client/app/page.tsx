@@ -4,6 +4,7 @@ import { useAsciiText, alligator } from 'react-ascii-text';
 import { Eye, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
+import { formatDistance } from 'date-fns';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -20,6 +21,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useShamans } from '@/hooks/use-shamans';
+import { trimHash } from '@/lib/utils';
 
 export default function Page() {
   const { data: shamans } = useShamans();
@@ -63,26 +65,30 @@ export default function Page() {
                   key={shaman.shamanId}
                   className="mb-4 flex flex-col min-h-[200px]">
                   <CardHeader>
-                    <CardTitle>{shaman.shamanId}</CardTitle>
+                    <CardTitle>
+                      Shaman: {trimHash(shaman.shamanId, 4)}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">ID:</span>
+                        <span className="text-sm font-medium">Balance:</span>
                         <span className="text-sm">
-                          <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
-                            <span className="font-mono">{shaman.shamanId}</span>
+                          <code className="rounded-md bg-muted px-1 py-0.5 text-sm overflow-y-auto">
+                            <span className="font-mono">{shaman.balance}</span>
                           </code>
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          IPFS Manifest:
-                        </span>
-                        <span className="text-sm">
-                          <code className="rounded-md bg-muted px-1 py-0.5 text-sm">
-                            <span className="font-mono">{shaman.metadata}</span>
-                          </code>
+                          Created{' '}
+                          {formatDistance(
+                            new Date(Number(shaman.createdAt) * 1000),
+                            new Date(),
+                            {
+                              addSuffix: true,
+                            }
+                          )}
                         </span>
                       </div>
                     </div>

@@ -4,6 +4,7 @@ import { CartesianGrid, Line, LineChart, XAxis } from 'recharts';
 import { Minus, MoreVertical, Plus, Trash2, Zap } from 'lucide-react';
 import { themes } from 'prism-react-renderer';
 import { Highlight } from 'prism-react-renderer';
+import { useParams } from 'next/navigation';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -45,6 +46,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useShaman } from '@/hooks/use-shaman';
 
 const chartData = [
   { day: 'Monday', executions: 186 },
@@ -84,28 +86,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const code = `
-export default async (context: ShamanContext) => {
-  const { fetch } = context;
-
-  // Fetch ETH price from CoinGecko
-  const response = await fetch(
-    'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
-  );
-  if (!response.ok) {
-    throw new Error('Failed to fetch ETH price');
-  }
-  const priceData = await response.json();
-  const ethPrice = priceData.ethereum.usd;
-
-  // Return the ETH price
-  return {
-    ethPrice // Current ETH price in USD
-  };
-}
-`;
-
 export default function Page() {
+  const { shamanId } = useParams();
+  const { data: shaman } = useShaman(shamanId as string);
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -117,21 +101,25 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbPage>Zug</BreadcrumbPage>
+                  <BreadcrumbPage className="text-xs">
+                    {shamanId}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-            <div>
-              <Card className="mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-4">
+              <Card>
                 <CardHeader>
-                  <CardTitle>$ZUG Tokens Remaining</CardTitle>
+                  <CardTitle>$ZUG Balance</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-center text-5xl font-bold">32</p>
+                  <p className="text-center text-5xl font-bold">
+                    {Number(shaman?.balance || 0)}
+                  </p>
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button className="w-full" variant="default">
@@ -144,7 +132,7 @@ export default function Page() {
                   </Button>
                 </CardFooter>
               </Card>
-              <Card className="mb-4">
+              <Card>
                 <CardHeader>
                   <CardTitle>Executions</CardTitle>
                 </CardHeader>
@@ -225,32 +213,40 @@ export default function Page() {
                 </CardContent>
               </Card>
             </div>
-            <div>
-              <Card className="mb-4">
+            <div className="flex flex-col gap-4">
+              <Card>
                 <CardHeader>
                   <CardTitle>Shaman Code</CardTitle>
                 </CardHeader>
-                <CardContent className="flex-1 max-h-[70vh] min-h-0">
-                  <div className="flex flex-col h-full overflow-y-auto">
-                    <Highlight
-                      theme={themes.nightOwl}
-                      code={code}
-                      language="tsx">
-                      {({ style, tokens, getLineProps, getTokenProps }) => (
-                        <pre
-                          className="overflow-auto w-full p-4 text-sm"
-                          style={style}>
-                          {tokens.map((line, i) => (
-                            <div key={i} {...getLineProps({ line })}>
-                              {line.map((token, key) => (
-                                <span key={key} {...getTokenProps({ token })} />
-                              ))}
-                            </div>
-                          ))}
-                        </pre>
-                      )}
-                    </Highlight>
-                  </div>
+                <CardContent className="flex-1 min-h-0 max-w-full w-full">
+                  {shaman?.code && (
+                    <div className="flex flex-col h-full w-full">
+                      <Highlight
+                        theme={themes.nightOwl}
+                        code={shaman?.code}
+                        language="tsx">
+                        {({ style, tokens, getLineProps, getTokenProps }) => (
+                          <pre
+                            className="overflow-x-auto w-full p-4 text-sm whitespace-pre"
+                            style={{ ...style, maxWidth: '100%' }}>
+                            {tokens.map((line, i) => (
+                              <div
+                                key={i}
+                                {...getLineProps({ line })}
+                                className="whitespace-pre">
+                                {line.map((token, key) => (
+                                  <span
+                                    key={key}
+                                    {...getTokenProps({ token })}
+                                  />
+                                ))}
+                              </div>
+                            ))}
+                          </pre>
+                        )}
+                      </Highlight>
+                    </div>
+                  )}
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button className="w-full" variant="outline">

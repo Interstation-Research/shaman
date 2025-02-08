@@ -1,1 +1,1 @@
-web: npm run indexer:sqlite
+web: pnpm run indexer:sqlite

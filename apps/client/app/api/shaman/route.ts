@@ -29,17 +29,14 @@ export async function POST(req: Request) {
     'base64'
   );
 
-  const shamanId = uuidv4();
-
   const metadata = {
-    shamanId,
     prompt,
     code: encodedCode,
     createdAt: new Date().toISOString(),
   };
 
   const upload = await objectManager.upload(
-    shamanId,
+    uuidv4(),
     Buffer.from(JSON.stringify(metadata)),
     null,
     null

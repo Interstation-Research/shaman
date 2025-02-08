@@ -1,7 +1,7 @@
 import { Hex, getContract, PublicClient, WalletClient } from 'viem';
 
-import IWorldAbi from 'contracts/abis/IWorld.abi.json';
-import ZugTokenAbi from 'contracts/abis/ZugToken.abi.json';
+import { IWorld } from 'contracts/abis/IWorld.abi';
+import { ZugToken } from 'contracts/abis/ZugToken.abi';
 import { getNetworkConfig } from '@/mud/getNetworkConfig';
 
 export type GetContractsResult = Awaited<ReturnType<typeof getContracts>>;
@@ -13,7 +13,7 @@ export async function getContracts(
   const networkConfig = getNetworkConfig();
   const worldContract = getContract({
     address: networkConfig.worldAddress as Hex,
-    abi: IWorldAbi,
+    abi: IWorld,
     client: {
       public: publicClient,
       wallet: walletClient,
@@ -22,7 +22,7 @@ export async function getContracts(
 
   const tokenContract = getContract({
     address: (await worldContract.read.getTokenAddress()) as Hex,
-    abi: ZugTokenAbi,
+    abi: ZugToken,
     client: {
       public: publicClient,
       wallet: walletClient,

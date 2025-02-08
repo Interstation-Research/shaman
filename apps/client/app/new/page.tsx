@@ -53,7 +53,7 @@ const formSchema = z.object({
   prompt: z.string().min(16, {
     message: 'Prompt must be at least 16 characters.',
   }),
-  network: z.enum(['ethereum', 'base', 'optimism', 'polygon', 'arbitrum'], {
+  network: z.enum(['arbitrumSepolia'], {
     required_error: 'Please select a network',
   }),
 });
@@ -71,7 +71,7 @@ export default function Page() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: '',
-      network: 'ethereum',
+      network: 'arbitrumSepolia',
     },
   });
 
@@ -189,11 +189,9 @@ export default function Page() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="ethereum">Ethereum</SelectItem>
-                          <SelectItem value="base">Base</SelectItem>
-                          <SelectItem value="optimism">Optimism</SelectItem>
-                          <SelectItem value="polygon">Polygon</SelectItem>
-                          <SelectItem value="arbitrum">Arbitrum</SelectItem>
+                          <SelectItem value="arbitrumSepolia">
+                            Arbitrum Sepolia (Testnet)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

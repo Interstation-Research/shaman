@@ -21,6 +21,24 @@ export function getSystemCalls({
     initialDeposit: bigint,
     metadataURI: string
   ): Promise<Hex> => {
+    await tokenContract.simulate.approve(
+      [worldContract.address, initialDeposit],
+      {
+        chain,
+        account: account.address,
+      }
+    );
+
+    const approveTx = await tokenContract.write.approve(
+      [worldContract.address, initialDeposit],
+      {
+        chain,
+        account: account.address,
+      }
+    );
+
+    await waitForTransaction(approveTx);
+
     await worldContract.simulate.createShaman([initialDeposit, metadataURI], {
       account: account.address,
     });

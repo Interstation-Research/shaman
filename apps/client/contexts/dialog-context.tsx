@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, ReactNode, useContext, useState } from 'react';
 import { DialogBuyZug } from '@/components/dialog-buy-zug';
 

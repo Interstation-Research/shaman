@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run copy-abis",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:abi-ts && pnpm run copy-abis && pnpm run generate-typed-abis",
     "build:abi": "forge build",
     "build:abi-ts": "mud abi-ts",
     "build:mud": "rimraf src/codegen && mud tablegen && mud worldgen",
@@ -21,7 +21,8 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "GAS_REPORTER_ENABLED=true pnpm mud test",
     "gas-report": "gas-report --save gas-report.json",
-    "copy-abis": "mkdir -p abis && cp out/IWorld.sol/IWorld.abi.json abis/ && cp out/ZugToken.sol/ZugToken.abi.json abis/"
+    "copy-abis": "mkdir -p abis && cp out/IWorld.sol/IWorld.abi.json abis/ && cp out/ZugToken.sol/ZugToken.abi.json abis/",
+    "generate-typed-abis": "tsx tasks/generateTypedAbis.ts"
   },
   "dependencies": {
     "@latticexyz/cli": "2.2.17",
@@ -41,6 +42,8 @@
     "solhint": "^5.0.3",
     "solhint-config-mud": "2.2.17",
     "solhint-plugin-mud": "2.2.17",
-    "rimraf": "^6.0.1"
+    "rimraf": "^6.0.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3"
   }
 }

@@ -1,8 +1,25 @@
-import { Account, Chain, Hex, WalletClient } from 'viem';
+import {
+  Account,
+  Chain,
+  Hex,
+  WalletClient,
+  PublicClient,
+  decodeEventLog,
+} from 'viem';
 
 import { GetContractsResult } from '@/mud/getContracts';
 import { MUDStateResult } from '@/mud/getMUDState';
 
+const shamanCreatedEventAbi = [
+  {
+    type: 'event',
+    name: 'ShamanCreated',
+    inputs: [
+      { type: 'bytes32', name: 'shamanId', indexed: true },
+      { type: 'address', name: 'creator', indexed: true },
+    ],
+  },
+] as const;
 export type SystemCalls = ReturnType<typeof getSystemCalls>;
 
 export function getSystemCalls({
@@ -10,11 +27,11 @@ export function getSystemCalls({
   tokenContract,
   networkConfig,
   waitForTransaction,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   client: { wallet: walletClient = {} as WalletClient, public: publicClient },
 }: GetContractsResult & MUDStateResult) {
   const chain = networkConfig.chain as Chain;
   const account = walletClient.account as Account;
+  const client = publicClient as PublicClient;
 
   // shaman functions
   const createShaman = async (
@@ -51,9 +68,32 @@ export function getSystemCalls({
       }
     );
 
-    const receipt = await waitForTransaction(hash);
-    const logs = await worldContract.getEvents.ShamanCreated(receipt);
-    return logs[0].topics[1] as Hex;
+    const receipt = await client.getTransactionReceipt({
+      hash: hash,
+    });
+
+    // Find and decode the ShamanCreated event log
+    const decodedLogs = receipt.logs.map((log) => {
+      try {
+        return decodeEventLog({
+          abi: shamanCreatedEventAbi,
+          data: log.data,
+          topics: log.topics,
+        });
+      } catch {
+        return null;
+      }
+    });
+
+    const shamanCreatedLog = decodedLogs.find(
+      (log) => log?.eventName === 'ShamanCreated'
+    );
+
+    if (!shamanCreatedLog) {
+      throw new Error('ShamanCreated event not found in transaction logs');
+    }
+
+    return shamanCreatedLog.args.shamanId;
   };
 
   const updateShamanMetadata = async (shamanId: Hex, metadata: string) => {

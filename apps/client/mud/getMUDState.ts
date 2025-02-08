@@ -8,6 +8,12 @@ import { getNetworkConfig } from '@/mud/getNetworkConfig';
 
 export type MUDStateResult = Awaited<ReturnType<typeof getMUDState>>;
 
+const indexerUrl = process.env.NEXT_PUBLIC_INDEXER_URL;
+
+if (!indexerUrl) {
+  throw new Error('NEXT_PUBLIC_INDEXER_URL is not defined');
+}
+
 export async function getMUDState(publicClient: PublicClient) {
   const networkConfig = getNetworkConfig();
 
@@ -18,7 +24,7 @@ export async function getMUDState(publicClient: PublicClient) {
       address: networkConfig.worldAddress as Hex,
       publicClient,
       startBlock: BigInt(networkConfig.initialBlockNumber),
-      // indexerUrl: 'https://api.indexer'
+      indexerUrl,
     });
 
   return {

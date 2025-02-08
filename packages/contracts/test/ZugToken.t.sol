@@ -12,8 +12,9 @@ contract ZugTokenTest is Test {
   address public alice;
   address public bob;
 
-  uint256 public constant INITIAL_MAX_SUPPLY = 1_000_000 ether;
-  uint256 public constant INITIAL_PRICE = 0.01 ether;
+  uint256 public constant INITIAL_MAX_SUPPLY = 1_000_000_000; // 1B tokens
+  uint256 public constant INITIAL_MAX_SALE_SUPPLY = 10_000_000; // 10M tokens
+  uint256 public constant INITIAL_PRICE = 10;
 
   function setUp() public {
     admin = makeAddr("admin");
@@ -22,7 +23,7 @@ contract ZugTokenTest is Test {
     bob = makeAddr("bob");
 
     vm.startPrank(admin);
-    token = new ZugToken(INITIAL_MAX_SUPPLY);
+    token = new ZugToken(INITIAL_MAX_SUPPLY, INITIAL_MAX_SALE_SUPPLY);
     token.setTreasury(treasury);
     token.setPrice(INITIAL_PRICE);
     token.grantRole(token.MINTER_ROLE(), admin);
@@ -33,6 +34,8 @@ contract ZugTokenTest is Test {
     assertEq(token.name(), "Zug");
     assertEq(token.symbol(), "ZUG");
     assertEq(token.maxSupply(), INITIAL_MAX_SUPPLY);
+    assertEq(token.maxSaleSupply(), INITIAL_MAX_SALE_SUPPLY);
+    assertEq(token.totalSaleSupply(), 0);
     assertEq(token.price(), INITIAL_PRICE);
     assertEq(token.treasury(), treasury);
     assertEq(token.saleActive(), false);
@@ -63,11 +66,11 @@ contract ZugTokenTest is Test {
   function testBuyingWithZeroDecimals() public {
     vm.startPrank(admin);
     token.setSaleActive(true);
-    token.setPrice(1 ether); // Set price to 1 ETH per token
+    token.setPrice(1); // Set price to 1 wei per token
     vm.stopPrank();
 
     uint256 amount = 5; // Buy 5 whole tokens
-    uint256 cost = amount * 1 ether;
+    uint256 cost = amount * 1;
 
     vm.deal(alice, cost);
 
@@ -81,11 +84,11 @@ contract ZugTokenTest is Test {
 
   function testMintingByMinter() public {
     vm.startPrank(admin);
-    token.mint(alice, 100 ether);
+    token.mint(alice, 1_000_000); // Mint 1M tokens
     vm.stopPrank();
 
-    assertEq(token.balanceOf(alice), 100 ether);
-    assertEq(token.totalSupply(), 100 ether);
+    assertEq(token.balanceOf(alice), 1_000_000);
+    assertEq(token.totalSupply(), 1_000_000);
   }
 
   function testMintingByUnauthorized() public {
@@ -98,7 +101,7 @@ contract ZugTokenTest is Test {
         role
       )
     );
-    token.mint(alice, 100 ether);
+    token.mint(alice, 100);
     vm.stopPrank();
   }
 
@@ -114,7 +117,7 @@ contract ZugTokenTest is Test {
     token.setSaleActive(true);
     vm.stopPrank();
 
-    uint256 amount = 100 ether;
+    uint256 amount = 1_000; // Buy 1000 tokens
     uint256 cost = amount * INITIAL_PRICE;
 
     vm.deal(alice, cost);
@@ -132,7 +135,7 @@ contract ZugTokenTest is Test {
     token.setSaleActive(true);
     vm.stopPrank();
 
-    uint256 amount = 100 ether;
+    uint256 amount = 1_000;
     uint256 cost = amount * INITIAL_PRICE;
 
     vm.deal(alice, cost);
@@ -144,7 +147,7 @@ contract ZugTokenTest is Test {
   }
 
   function testBuyingWhenSaleInactive() public {
-    uint256 amount = 100 ether;
+    uint256 amount = 1_000;
     uint256 cost = amount * INITIAL_PRICE;
 
     vm.deal(alice, cost);
@@ -163,24 +166,21 @@ contract ZugTokenTest is Test {
     vm.stopPrank();
   }
 
-  function testBuyingAboveMaxSupply() public {
+  function testBurning() public {
     vm.startPrank(admin);
-    token.setSaleActive(true);
+    token.mint(alice, 1_000);
     vm.stopPrank();
-
-    uint256 amount = INITIAL_MAX_SUPPLY + 1;
-    uint256 cost = amount * INITIAL_PRICE;
-
-    vm.deal(alice, cost);
 
     vm.startPrank(alice);
-    vm.expectRevert("ZugToken: purchase would exceed max supply");
-    token.buy{ value: cost }(alice, amount);
+    token.burn(500);
     vm.stopPrank();
+
+    assertEq(token.balanceOf(alice), 500);
+    assertEq(token.totalSupply(), 500);
   }
 
   function testSettingNewPrice() public {
-    uint256 newPrice = 0.02 ether;
+    uint256 newPrice = 20;
 
     vm.startPrank(admin);
     token.setPrice(newPrice);
@@ -197,7 +197,7 @@ contract ZugTokenTest is Test {
   }
 
   function testSettingNewMaxSupply() public {
-    uint256 newMaxSupply = 2_000_000 ether;
+    uint256 newMaxSupply = 2_000_000_000; // 2B tokens
 
     vm.startPrank(admin);
     token.setMaxSupply(newMaxSupply);
@@ -208,9 +208,9 @@ contract ZugTokenTest is Test {
 
   function testSettingInvalidMaxSupply() public {
     vm.startPrank(admin);
-    token.mint(alice, 100 ether);
+    token.mint(alice, 1_000_000);
     vm.expectRevert("ZugToken: new max supply below current supply");
-    token.setMaxSupply(50 ether);
+    token.setMaxSupply(500_000);
     vm.stopPrank();
   }
 
@@ -238,16 +238,67 @@ contract ZugTokenTest is Test {
     vm.stopPrank();
   }
 
-  function testBurning() public {
+  function testBuyingAboveMaxSaleSupply() public {
     vm.startPrank(admin);
-    token.mint(alice, 100 ether);
+    token.setSaleActive(true);
+    vm.stopPrank();
+
+    uint256 amount = INITIAL_MAX_SALE_SUPPLY + 1;
+    uint256 cost = amount * INITIAL_PRICE;
+
+    vm.deal(alice, cost);
+
+    vm.startPrank(alice);
+    vm.expectRevert("ZugToken: purchase would exceed max sale supply");
+    token.buy{ value: cost }(alice, amount);
+    vm.stopPrank();
+  }
+
+  function testSettingMaxSaleSupply() public {
+    uint256 newMaxSaleSupply = 20_000_000; // 20M tokens
+
+    vm.startPrank(admin);
+    token.setMaxSaleSupply(newMaxSaleSupply);
+    vm.stopPrank();
+
+    assertEq(token.maxSaleSupply(), newMaxSaleSupply);
+  }
+
+  function testSettingInvalidMaxSaleSupply() public {
+    vm.startPrank(admin);
+    token.setSaleActive(true);
+
+    // Buy some tokens first
+    uint256 buyAmount = 1_000_000;
+    uint256 cost = buyAmount * INITIAL_PRICE;
+    vm.deal(alice, cost);
     vm.stopPrank();
 
     vm.startPrank(alice);
-    token.burn(50 ether);
+    token.buy{ value: cost }(alice, buyAmount);
     vm.stopPrank();
 
-    assertEq(token.balanceOf(alice), 50 ether);
-    assertEq(token.totalSupply(), 50 ether);
+    // Try to set max sale supply below current sale supply
+    vm.startPrank(admin);
+    vm.expectRevert("ZugToken: new max sale supply below current sale supply");
+    token.setMaxSaleSupply(500_000);
+    vm.stopPrank();
+  }
+
+  function testSettingMaxSaleSupplyAboveMaxSupply() public {
+    vm.startPrank(admin);
+    vm.expectRevert("ZugToken: max sale supply cannot exceed max supply");
+    token.setMaxSaleSupply(INITIAL_MAX_SUPPLY + 1);
+    vm.stopPrank();
+  }
+
+  function testMintingDoesNotAffectSaleSupply() public {
+    vm.startPrank(admin);
+    uint256 mintAmount = 5_000_000;
+    token.mint(alice, mintAmount);
+    vm.stopPrank();
+
+    assertEq(token.totalSupply(), mintAmount);
+    assertEq(token.totalSaleSupply(), 0); // Sale supply should remain 0
   }
 }

@@ -7,7 +7,7 @@
     "dev:api": "pnpm --filter 'api' run dev",
     "dev:contracts": "pnpm --filter 'contracts' run dev",
     "indexer:sqlite": "npx -y -p @latticexyz/store-indexer@latest sqlite-indexer",
-    "build": "pnpm recursive run build",
+    "build:all": "pnpm recursive run build",
     "foundry:up": "curl -L https://foundry.paradigm.xyz | bash && bash $HOME/.foundry/bin/foundryup",
     "foundry:setup": "(forge --version || pnpm foundry:up)",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

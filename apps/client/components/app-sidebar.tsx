@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sparkles, Webhook, Book, Send, X } from 'lucide-react';
+import { Sparkles, Book, Send, X } from 'lucide-react';
 
 import Link from 'next/link';
 import { NavShamans } from '@/components/nav-shamans';
@@ -35,13 +35,6 @@ const data = {
       icon: Book,
     },
   ],
-  projects: [
-    {
-      name: 'Zug',
-      url: '/shaman',
-      icon: Webhook,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -65,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavShamans projects={data.projects} />
+        <NavShamans />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

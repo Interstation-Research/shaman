@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Copy,
-  MoreHorizontal,
-  Plus,
-  Trash2,
-  Zap,
-  type LucideIcon,
-} from 'lucide-react';
+import { Copy, MoreHorizontal, Plus, Trash2, Webhook, Zap } from 'lucide-react';
 
 import Link from 'next/link';
 import {
@@ -26,29 +19,23 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useShamans } from '@/hooks/use-shamans';
 
-export function NavShamans({
-  projects,
-}: {
-  projects: {
-    name: string;
-    url: string;
-    icon: LucideIcon;
-  }[];
-}) {
+export function NavShamans() {
   const { isMobile } = useSidebar();
+  const { data: shamans } = useShamans();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Shamans</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        {shamans.map((item) => (
+          <SidebarMenuItem key={item.shamanId}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
+              <Link href={`/shaman/${item.shamanId}`}>
+                <Webhook />
+                <span>{item.shamanId}</span>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

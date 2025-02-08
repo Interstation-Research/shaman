@@ -1,8 +1,12 @@
 'use client';
 
-import { ChevronsUpDown, LogOut, Sparkles } from 'lucide-react';
+import { ChevronsUpDown, LogOut, Sparkles, Wallet } from 'lucide-react';
 import BoringAvatar from 'boring-avatars';
-import { usePrivy } from '@privy-io/react-auth';
+import {
+  useFundWallet,
+  usePrivy,
+  WalletWithMetadata,
+} from '@privy-io/react-auth';
 import { useState } from 'react';
 import { formatEther } from 'viem';
 import { Button } from '@/components/ui/button';
@@ -25,6 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { toast } from '@/hooks/use-toast';
 import { trimHash } from '@/lib/utils';
 import {
   Dialog,
@@ -41,19 +46,38 @@ import { useZugBalance } from '@/hooks/use-zug-balance';
 export function NavUser() {
   const mud = useMUD();
   const { isMobile } = useSidebar();
+  const { fundWallet } = useFundWallet();
   const { user, login, logout } = usePrivy();
-  const address = mud?.calls?.embedded?.client?.wallet?.account?.address;
-  const { data: zugBalance } = useZugBalance(address);
+  const embeddedWallet = user?.linkedAccounts?.find(
+    (account) =>
+      account.type === 'wallet' && account.connectorType === 'embedded'
+  ) as WalletWithMetadata;
+  const address = embeddedWallet?.address;
+  const [loading, setLoading] = useState(false);
+  const { data: zugBalance } = useZugBalance(address as `0x${string}`);
   const [quantity, setQuantity] = useState(0);
   const [price] = useState(0n);
 
   useWalletDelegation();
 
   const handlePurchase = async () => {
+    setLoading(true);
     try {
       await mud?.calls.embedded?.systemCalls?.purchase(BigInt(quantity));
+
+      toast({
+        title: 'Success',
+        description: 'Purchase successful.',
+      });
     } catch (error) {
       console.error(error);
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,6 +135,14 @@ export function NavUser() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onClick={() => fundWallet(address || '')}>
+                  <Wallet />
+                  Fund Wallet
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DropdownMenuGroup>
                 <DialogTrigger asChild>
                   <DropdownMenuItem className="cursor-pointer">
                     <Sparkles />
@@ -155,8 +187,8 @@ export function NavUser() {
           <p className="text-right mr-3">{formatEther(price)} ETH</p>
         </div>
         <DialogFooter>
-          <Button onClick={handlePurchase} type="submit">
-            Confirm Purchase
+          <Button disabled={loading} onClick={handlePurchase} type="submit">
+            {loading ? 'Confirming...' : 'Confirm Purchase'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -21,5 +21,13 @@ interface IShamanSystem {
 
   function withdrawShaman(bytes32 shamanId, uint256 amount) external;
 
+  function getShamanMetadata(bytes32 shamanId) external view returns (string memory);
+
+  function getShamanBalance(bytes32 shamanId) external view returns (uint256);
+
+  function getShamanActive(bytes32 shamanId) external view returns (bool);
+
+  function getShamanCreator(bytes32 shamanId) external view returns (address);
+
   function getTokenAddress() external view returns (address);
 }

@@ -7,7 +7,7 @@ export const useZugBalance = (walletAddress?: Hex) => {
   const mud = useMUD();
   return useQuery({
     queryKey: ['zugBalance', walletAddress],
-    initialData: 0n,
+    initialData: null,
     queryFn: () => {
       if (!walletAddress) return null;
       return mud?.calls.embedded?.systemCalls?.getBalanceOf(walletAddress);

@@ -70,7 +70,7 @@ export default function Page() {
   const [balance, setBalance] = useState(1);
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const { user } = usePrivy();
+  const { ready, user } = usePrivy();
   const embeddedWallet = user?.linkedAccounts?.find(
     (account) =>
       account.type === 'wallet' && account.connectorType === 'embedded'
@@ -84,14 +84,14 @@ export default function Page() {
 
   useEffect(() => {
     if (
-      user &&
+      ready &&
       !isZugBalanceLoading &&
       !isZugBalanceFetching &&
       zugBalance === 0n
     ) {
       setOpen(true);
     }
-  }, [user, zugBalance, isZugBalanceLoading, isZugBalanceFetching]);
+  }, [ready, zugBalance, isZugBalanceLoading, isZugBalanceFetching]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

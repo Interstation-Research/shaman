@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { ArrowRight, Upload, Zap } from 'lucide-react';
+import { ArrowRight, Webhook } from 'lucide-react';
 import { Highlight, themes } from 'prism-react-renderer';
+import { useRouter } from 'next/navigation';
 import {
   SidebarInset,
   SidebarProvider,
@@ -46,6 +47,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMUD } from '@/contexts/mud-context';
 
 const formSchema = z.object({
   prompt: z.string().min(16, {
@@ -54,27 +56,22 @@ const formSchema = z.object({
   network: z.enum(['ethereum', 'base', 'optimism', 'polygon', 'arbitrum'], {
     required_error: 'Please select a network',
   }),
-  frequency: z.enum(['hourly', 'daily', 'weekly'], {
-    required_error: 'Please select a frequency',
-  }),
-  duration: z.number().min(1, {
-    message: 'Duration must be at least 1 execution',
-  }),
 });
 
 export default function Page() {
+  const mud = useMUD();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [code, setCode] = useState('');
   const [ipfs, setIpfs] = useState('');
+  const [balance, setBalance] = useState(1);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       prompt: '',
       network: 'ethereum',
-      frequency: 'daily',
-      duration: 1,
     },
   });
 
@@ -112,13 +109,29 @@ export default function Page() {
 
   async function handleDeploy() {
     setIsDeploying(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsDeploying(false);
 
-    toast({
-      title: 'Success!',
-      description: 'Your Shaman has been deployed.',
-    });
+    try {
+      const shamanId = await mud?.calls?.embedded?.systemCalls?.createShaman(
+        BigInt(balance || 0),
+        ipfs
+      );
+
+      toast({
+        title: 'Success!',
+        description: 'Your Shaman has been deployed.',
+      });
+
+      router.push(`/shaman/${shamanId}`);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsDeploying(false);
+    }
   }
 
   return (
@@ -187,50 +200,18 @@ export default function Page() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="frequency"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Frequency</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select frequency" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="hourly">Hourly</SelectItem>
-                          <SelectItem value="daily">Daily</SelectItem>
-                          <SelectItem value="weekly">Weekly</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="duration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Number of Executions</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min="1"
-                          {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <FormItem>
+                  <FormLabel>$ZUG Balance</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={balance}
+                      onChange={(e) => setBalance(parseInt(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
                 <Button className="w-full" type="submit" disabled={isLoading}>
                   {isLoading ? 'Generating...' : 'Generate Shaman Code'}
                   <ArrowRight />
@@ -283,24 +264,11 @@ export default function Page() {
                 </CardContent>
                 <CardFooter className="flex flex-row items-center justify-end mt-auto space-x-3">
                   <Button
-                    onClick={() => {
-                      window.open(
-                        `https://gateway.shaman.fun/ipfs/${ipfs}`,
-                        '_blank'
-                      );
-                    }}
-                    variant="outline"
-                    className="w-full"
-                    disabled={!code}>
-                    <Zap className="text-muted-foreground" />
-                    Trigger
-                  </Button>
-                  <Button
                     onClick={handleDeploy}
                     className="w-full"
                     disabled={isDeploying || !code}>
-                    <Upload />
-                    {isDeploying ? 'Deploying...' : `Deploy`}
+                    <Webhook />
+                    {isDeploying ? 'Deploying...' : `Deploy Shaman`}
                   </Button>
                 </CardFooter>
               </Card>

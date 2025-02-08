@@ -8,8 +8,7 @@ It needs to run on Deno, and it needs to be able to fetch data from the internet
 
 Here is a sample code:
 export default async (context: ShamanContext) => {
-  const { fetch, publicClient } = context;
-  const { parseEther, encodeFunctionData } = await import('viem');
+  const { fetch, publicClient, encodeFunctionData, parseEther } = context;
 
   // 1. Fetch ETH price from CoinGecko
   const response = await fetch(
@@ -47,6 +46,70 @@ export default async (context: ShamanContext) => {
 }
 
 Your task is to write the code for the Shaman, described in the prompt.
+
+Never use ethers.js, use viem instead.
+Never use an external import, use the context object instead.
+
+Here is the context object type:
+
+export interface ShamanContext {
+  fetch: typeof fetch;
+  publicClient: PublicClient;
+  walletClient: typeof createServerClient;
+  encodeFunctionData: typeof encodeFunctionData;
+  parseEther: typeof parseEther;
+  parseUnits: typeof parseUnits;
+  formatEther: typeof formatEther;
+  shamanOwner: Hex;
+}
+
+Where:
+
+- PublicClient is a viem PublicClient
+- encodeFunctionData is a viem encodeFunctionData
+- parseEther is a viem parseEther
+- parseUnits is a viem parseUnits
+- formatEther is a viem formatEther
+- shamanOwner is the address of the owner of the Shaman
+
+- createServerClient has the following signature:?
+
+const createServerClient: (address: Hex, chainId: number) => {
+    account: Hex;
+    chainId: number;
+    sendTransaction: (tx: Transaction) => Promise<string>;
+}
+
+A quick example of how to use the context object:
+
+const { fetch, publicClient, encodeFunctionData, parseEther, shamanOwner } = context;
+
+const abi = [{
+    "inputs": [
+        { "internalType": "address", "name": "recipient", "type": "address" },
+        { "internalType": "uint256", "name": "quantity", "type": "uint256" }
+    ],
+    "name": "mint",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+},] as const;
+
+
+const data = encodeFunctionData({
+    abi,
+    functionName: 'mint',
+    args: [shamanOwner, 1n]
+});
+
+const tx = await walletClient.sendTransaction({
+    to: shamanOwner,
+    data,
+    value: 0,
+});
+
+
+
 `;
 };
 

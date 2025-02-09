@@ -39,6 +39,7 @@ export function DialogBuyZug(props: DialogProps) {
       });
 
       props.onSuccess?.();
+      props.onOpenChange?.(false);
     } catch (error) {
       console.error(error);
       toast({

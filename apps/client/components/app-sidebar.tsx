@@ -26,7 +26,7 @@ const data = {
     },
     {
       title: 'Documentation',
-      url: 'https://docs.shaman.fun',
+      url: 'https://shamandotfun.notion.site/',
       icon: Book,
     },
   ],

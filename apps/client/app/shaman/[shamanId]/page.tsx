@@ -288,7 +288,7 @@ export default function Page() {
                                     className="cursor-pointer"
                                     onClick={() => {
                                       window.open(
-                                        `https://gateway.pinata.cloud/ipfs/${log.logMetadata}`,
+                                        `https://gateway.shaman.fun/ipfs/${log.logMetadata}`,
                                         '_blank'
                                       );
                                     }}>

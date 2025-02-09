@@ -27,7 +27,8 @@ export function DialogAddBalance(props: DialogProps) {
   const { data: zugBalance } = useZugBalance(
     embeddedWallet?.address as `0x${string}`
   );
-  const { shamanId } = useParams();
+  const { shamanId: shamanIdParam } = useParams();
+  const shamanId = props.shamanId || shamanIdParam;
 
   const handleAddBalance = async () => {
     setLoading(true);

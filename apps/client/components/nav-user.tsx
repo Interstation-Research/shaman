@@ -67,7 +67,7 @@ export function NavUser() {
           ) : (
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="flex justify-center data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               onClick={login}>
               <span className="truncate font-semibold">Connect Wallet</span>
             </SidebarMenuButton>

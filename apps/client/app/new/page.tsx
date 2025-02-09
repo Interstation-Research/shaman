@@ -137,7 +137,7 @@ export default function Page() {
     setIsDeploying(true);
 
     try {
-      const shamanId = await mud?.calls?.embedded?.systemCalls?.createShaman(
+      await mud?.calls?.embedded?.systemCalls?.createShaman(
         BigInt(balance || 0),
         ipfs
       );
@@ -147,7 +147,7 @@ export default function Page() {
         description: 'Your Shaman has been deployed.',
       });
 
-      router.push(`/shaman/${shamanId}`);
+      router.push(`/`);
     } catch (error) {
       console.error(error);
       toast({

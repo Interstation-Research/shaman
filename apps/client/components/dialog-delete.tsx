@@ -19,7 +19,8 @@ import { useMUD } from '@/contexts/mud-context';
 export function DialogDelete(props: DialogProps) {
   const mud = useMUD();
   const [loading, setLoading] = useState(false);
-  const { shamanId } = useParams();
+  const { shamanId: shamanIdParam } = useParams();
+  const shamanId = props.shamanId || shamanIdParam;
 
   const handleDelete = async () => {
     setLoading(true);

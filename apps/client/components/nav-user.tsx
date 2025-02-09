@@ -2,11 +2,7 @@
 
 import { ChevronsUpDown, LogOut, Sparkles, Wallet } from 'lucide-react';
 import BoringAvatar from 'boring-avatars';
-import {
-  useFundWallet,
-  usePrivy,
-  WalletWithMetadata,
-} from '@privy-io/react-auth';
+import { useFundWallet, usePrivy } from '@privy-io/react-auth';
 import { Chain, formatEther } from 'viem';
 import { useBalance } from 'wagmi';
 import { Avatar } from '@/components/ui/avatar';
@@ -30,15 +26,13 @@ import { trimHash } from '@/lib/utils';
 import { useZugBalance } from '@/hooks/use-zug-balance';
 import { chain } from '@/mud/supportedChains';
 import { useDialogContext } from '@/contexts/dialog-context';
+import { useEmbeddedWallet } from '@/hooks/use-embedded-wallet';
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { fundWallet } = useFundWallet();
   const { user, login, logout } = usePrivy();
-  const embeddedWallet = user?.linkedAccounts?.find(
-    (account) =>
-      account.type === 'wallet' && account.connectorType === 'embedded'
-  ) as WalletWithMetadata;
+  const embeddedWallet = useEmbeddedWallet();
   const address = embeddedWallet?.address;
   const { data: balance } = useBalance({ address: address as `0x${string}` });
   const { data: zugBalance } = useZugBalance(address as `0x${string}`);

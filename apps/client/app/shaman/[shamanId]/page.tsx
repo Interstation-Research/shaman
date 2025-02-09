@@ -48,6 +48,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useShaman } from '@/hooks/use-shaman';
 import { useDialogContext } from '@/contexts/dialog-context';
+import { useZugBalance } from '@/hooks/use-zug-balance';
+import { useEmbeddedWallet } from '@/hooks/use-embedded-wallet';
 
 const chartData = [
   { day: 'Monday', executions: 186 },
@@ -89,9 +91,19 @@ const chartConfig = {
 
 export default function Page() {
   const { shamanId } = useParams();
-  const { data: shaman } = useShaman(shamanId as string);
+  const { data: shaman, refetch } = useShaman(shamanId as string);
+  const embeddedWallet = useEmbeddedWallet();
+  const { refetch: refetchZugBalance } = useZugBalance(
+    embeddedWallet?.address as `0x${string}`
+  );
   const { openAddBalance, openWithdrawBalance, openTrigger, openDelete } =
     useDialogContext();
+
+  const handleRefetch = () => {
+    refetch();
+    refetchZugBalance();
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -127,14 +139,18 @@ export default function Page() {
                   <Button
                     className="w-full"
                     variant="default"
-                    onClick={() => openAddBalance(true)}>
+                    onClick={() =>
+                      openAddBalance(true, undefined, handleRefetch)
+                    }>
                     <Plus />
                     Add Balance
                   </Button>
                   <Button
                     className="w-full"
                     variant="outline"
-                    onClick={() => openWithdrawBalance(true)}>
+                    onClick={() =>
+                      openWithdrawBalance(true, undefined, handleRefetch)
+                    }>
                     <Minus />
                     Withdraw Balance
                   </Button>
@@ -260,14 +276,14 @@ export default function Page() {
                   <Button
                     className="w-full"
                     variant="outline"
-                    onClick={() => openTrigger(true)}>
+                    onClick={() => openTrigger(true, undefined, handleRefetch)}>
                     <Zap />
                     Trigger
                   </Button>
                   <Button
                     className="w-full"
                     variant="destructive"
-                    onClick={() => openDelete(true)}>
+                    onClick={() => openDelete(true, undefined, handleRefetch)}>
                     <Trash2 />
                     Delete
                   </Button>

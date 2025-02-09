@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { DialogProps } from '@/contexts/dialog-context';
 import { Button } from '@/components/ui/button';
@@ -21,6 +21,12 @@ export function DialogTrigger(props: DialogProps) {
   const [response, setResponse] = useState<ShamanTriggerResponse | null>(null);
   const { shamanId: shamanIdParam } = useParams();
   const shamanId = props.shamanId || shamanIdParam;
+
+  useEffect(() => {
+    if (props.open) {
+      setResponse(null);
+    }
+  }, [props.open]);
 
   const handleTrigger = async () => {
     setLoading(true);

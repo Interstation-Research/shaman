@@ -208,6 +208,14 @@ export function getSystemCalls({
     return (await tokenContract.read.totalSupply()) as bigint;
   };
 
+  const getMaxSaleSupply = async (): Promise<bigint> => {
+    return (await tokenContract.read.maxSaleSupply()) as bigint;
+  };
+
+  const getTotalSaleSupply = async (): Promise<bigint> => {
+    return (await tokenContract.read.totalSaleSupply()) as bigint;
+  };
+
   const getBalanceOf = async (address: Hex): Promise<bigint> => {
     return (await tokenContract.read.balanceOf([address])) as bigint;
   };
@@ -228,5 +236,7 @@ export function getSystemCalls({
     addBalance,
     withdrawBalance,
     deleteShaman,
+    getMaxSaleSupply,
+    getTotalSaleSupply,
   };
 }

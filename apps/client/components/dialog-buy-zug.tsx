@@ -18,6 +18,7 @@ import {
 import { useMUD } from '@/contexts/mud-context';
 import { useZugPrice } from '@/hooks/use-zug-price';
 import { useZugAddress } from '@/hooks/use-zug-address';
+import { useZugSaleSupply } from '@/hooks/use-zug-sale-supply';
 
 export function DialogBuyZug(props: DialogProps) {
   const mud = useMUD();
@@ -25,6 +26,7 @@ export function DialogBuyZug(props: DialogProps) {
   const [quantity, setQuantity] = useState(10);
   const { data: price } = useZugPrice(BigInt(quantity));
   const { data: zugAddress } = useZugAddress();
+  const { data: saleSupply } = useZugSaleSupply();
 
   const handlePurchase = async () => {
     setLoading(true);
@@ -64,7 +66,8 @@ export function DialogBuyZug(props: DialogProps) {
               As units gets used, the available supply of $ZUG decreases.
             </span>
             <span className="block mb-2">
-              Available Supply: <span className="font-bold">10,000,000</span>
+              Available Supply:{' '}
+              <span className="font-bold">{saleSupply?.currentSupply}</span>
             </span>
             <span className="block mb-4">
               $ZUG Contract Address:{' '}
@@ -80,7 +83,7 @@ export function DialogBuyZug(props: DialogProps) {
             <Input
               id="quantity"
               value={quantity}
-              max={1000000000}
+              max={Number(saleSupply?.currentSupply)}
               onChange={(e) => setQuantity(Number(e.target.value))}
               type="number"
               className="text-right"

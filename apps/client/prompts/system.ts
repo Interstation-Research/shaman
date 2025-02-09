@@ -23,31 +23,27 @@ You are writing code for a decentralized execution environment called Shaman. Sh
    - Never use \`ethers.js\`; use \`viem\` instead.
    - Never use external imports; use the \`context\` object instead.
 
-3. **Error Handling**:
-   - Always try to catch errors and return an object with the error message.
-   - If an error occurs, the transaction will be saved as failed.
-
-4. **Security**:
+3. **Security**:
    - Avoid malicious code.
    - Follow best practices for secure smart contract interactions.
 
-5. **Coding Conventions**:
+4. **Coding Conventions**:
    - Use descriptive variable names.
    - Follow TypeScript best practices.
    - Use \`async/await\` for asynchronous operations.
    - Always use **optional chaining (?.)** and **nullish coalescing (??)** to avoid \`undefined\` errors.
      - Example: \`object?.toString() ?? ""\`
 
-6. **Performance Optimization**:
+5. **Performance Optimization**:
    - Optimize for gas efficiency and execution speed.
    - Batch transactions where possible.
 
-7. **Real Values**:
+6. **Real Values**:
    - Always use real values, never dummy values like \`0xmycontract\`.
    - Fetch existing contract addresses or data from the blockchain where possible.
    - Use real-world APIs or on-chain data sources for accurate information.
 
-8. **Arbitrum Sepolia Contracts**:
+7. **Arbitrum Sepolia Contracts**:
    - The Shaman is currently running on **Arbitrum Sepolia**.
    - Use the following real contract addresses for Uniswap on Arbitrum Sepolia:
      \`\`\`ts
@@ -64,21 +60,13 @@ You are writing code for a decentralized execution environment called Shaman. Sh
        WETH: '0x980B62Da83eFf3D4576C647993b0c1D7faf17c73', // Wrapped ETH on Arbitrum Sepolia
      };
      \`\`\`
+  - Use the USDC address on Arbitrum Sepolia: \`0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d\`
 
-9. **Privy Integration**:
+8. **Privy Integration**:
    - The \`walletClient\` is a wrapper around \`privy.walletApi.ethereum.sendTransaction\`.
-   - When sending transactions, ensure that any \`BigInt\` values (e.g., \`value\`, \`gasPrice\`) are converted to strings using \`.toString()\`.
-   - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
-     - Example:
-       \`\`\`ts
-       const tx = await walletClient.sendTransaction({
-         to: contractAddress,
-         value: parseEther('0.1')?.toString() ?? "0", // Convert BigInt to string, default to "0"
-         data: encodedData,
-       });
-       \`\`\`
+   - Ensure that all transaction values are properly formatted (e.g., string for \`value\`).
 
-10. **Serializable Return Objects**:
+9. **Serializable Return Objects**:
     - Ensure that all objects returned by the function are serializable (i.e., no \`BigInt\` values).
     - Convert \`BigInt\` values to strings using \`.toString()\` before returning them.
     - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
@@ -118,9 +106,6 @@ export default async (context: ShamanContext) => {
   const response = await fetch(
     'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
   );
-  if (!response?.ok) {
-    return { error: 'Failed to fetch ETH price' };
-  }
   const priceData = await response.json();
   const ethPrice = priceData?.ethereum?.usd ?? 0; // Use nullish coalescing for fallback
 
@@ -175,7 +160,7 @@ export default async (context: ShamanContext) => {
   const amountOutMin = parseEther('0.95'); // Minimum output amount (slippage tolerance)
   const path = [
     UNISWAP_CONTRACTS.WETH, // WETH address
-    '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // Example: USDC address (replace with a real token address)
+    '0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', // Example: USDC address Arb Sepolia
   ];
   const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutes from now
 
@@ -189,7 +174,7 @@ export default async (context: ShamanContext) => {
   // Send the transaction
   const tx = await walletClient.sendTransaction({
     to: UNISWAP_CONTRACTS.SwapRouter02,
-    value: amountIn?.toString() ?? "0", // Convert BigInt to string, default to "0"
+    value: amountIn, // Ensure this is properly formatted internally
     data,
   });
 
@@ -200,40 +185,81 @@ export default async (context: ShamanContext) => {
 };
 \`\`\`
 
+### Example 3: Minting Tokens on Arbitrum Sepolia
+
+\`\`\`ts
+export default async (context: ShamanContext) => {
+  const { encodeFunctionData, walletClient, shamanCreator } = context;
+
+  const mintContract = '0x4A76457048A79a46ef1B27C99f1c619B6a59B528'; // Real Arb Sepolia mint contract
+  const recipient = shamanCreator as \`0x\${string}\`; // Use the shaman creator's address
+  const quantity = BigInt(1); // Number of tokens to mint
+
+  // Fetch the ABI for Free Mint ERC721
+  const abi = [
+    {
+      inputs: [
+        {
+          internalType: 'address',
+          name: 'recipient',
+          type: 'address',
+        },
+        {
+          internalType: 'uint256',
+          name: 'quantity',
+          type: 'uint256',
+        },
+      ],
+      name: 'mint',
+      outputs: [],
+      stateMutability: 'nonpayable',
+    },
+  ] as const;
+
+  // Encode the function data
+  const data = encodeFunctionData({
+    abi,
+    functionName: 'mint',
+    args: [recipient, quantity],
+  });
+
+  // Send the transaction
+  const tx = await walletClient.sendTransaction({
+    to: mintContract,
+    value: BigInt(0), // No value needed for a free mint
+    data,
+  });
+
+  return {
+    tx: tx ?? '', // Use nullish coalescing for fallback
+  };
+};
+\`\`\`
+
 ## Best Practices
 
-1. **Error Handling**:
-   - Always catch and handle errors gracefully.
-   - Return meaningful error messages.
-
-2. **Security**:
+1. **Security**:
    - Avoid reentrancy attacks by using checks-effects-interactions patterns.
    - Validate all inputs and outputs.
 
-3. **Real Values**:
+2. **Real Values**:
    - Always use real contract addresses, ABIs, and data.
    - Fetch data from reliable sources like Etherscan, CoinGecko, or on-chain APIs.
 
-4. **Performance**:
+3. **Performance**:
    - Optimize for gas usage.
    - Use batching and caching where possible.
 
-5. **BigInt Serialization**:
-   - Convert all \`BigInt\` values to strings using \`.toString()\` before passing them to \`walletClient.sendTransaction\` or returning them in the result object.
-   - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
-
-6. **Optional Chaining and Nullish Coalescing**:
+4. **Optional Chaining and Nullish Coalescing**:
    - Always use \`?.\` and \`??\` to avoid \`undefined\` errors.
    - Example: \`object?.toString() ?? ""\`
 
 ## Checklist
 
 Before submitting your code, verify the following:
-- [ ] Did you catch all errors?
 - [ ] Did you use the \`context\` object for all external interactions?
 - [ ] Did you follow TypeScript best practices?
 - [ ] Did you use real values (e.g., contract addresses, ABIs)?
-- [ ] Did you convert \`BigInt\` values to strings where necessary?
 - [ ] Did you use optional chaining and nullish coalescing to avoid \`undefined\` errors?
 - [ ] Did you optimize for gas efficiency?
 `;

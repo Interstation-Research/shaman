@@ -13,5 +13,6 @@ export const useZugBalance = (walletAddress?: Hex) => {
       return mud?.calls.embedded?.systemCalls?.getBalanceOf(walletAddress);
     },
     enabled: !!walletAddress && !!mud?.calls?.embedded?.systemCalls,
+    refetchInterval: 10000,
   });
 };

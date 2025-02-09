@@ -8,17 +8,44 @@ import { DialogWithdrawBalance } from '@/components/dialog-withdraw-balance';
 import { DialogDelete } from '@/components/dialog-delete';
 import { DialogTrigger } from '@/components/dialog-trigger';
 
+export interface DialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  redirectOnClose?: string;
+  onSuccess?: () => void;
+}
+
 export type Dialogs = {
   buyZug: boolean;
   addBalance: boolean;
   withdrawBalance: boolean;
   delete: boolean;
   trigger: boolean;
-  openBuyZug: (open: boolean, redirect?: string) => void;
-  openAddBalance: (open: boolean, redirect?: string) => void;
-  openWithdrawBalance: (open: boolean, redirect?: string) => void;
-  openDelete: (open: boolean, redirect?: string) => void;
-  openTrigger: (open: boolean, redirect?: string) => void;
+  openBuyZug: (
+    open: boolean,
+    redirect?: string,
+    onSuccess?: () => void
+  ) => void;
+  openAddBalance: (
+    open: boolean,
+    redirect?: string,
+    onSuccess?: () => void
+  ) => void;
+  openWithdrawBalance: (
+    open: boolean,
+    redirect?: string,
+    onSuccess?: () => void
+  ) => void;
+  openDelete: (
+    open: boolean,
+    redirect?: string,
+    onSuccess?: () => void
+  ) => void;
+  openTrigger: (
+    open: boolean,
+    redirect?: string,
+    onSuccess?: () => void
+  ) => void;
 };
 
 const DialogContext = createContext<Dialogs>({
@@ -44,6 +71,7 @@ export const DialogContextProvider = ({ children }: Props) => {
   const [withdrawBalance, setWithdrawBalance] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
+  const [onSuccess, setOnSuccess] = useState<() => void | undefined>();
   const [triggerDialog, setTriggerDialog] = useState(false);
   const router = useRouter();
 
@@ -54,41 +82,66 @@ export const DialogContextProvider = ({ children }: Props) => {
     }
   };
 
-  const openBuyZug = (open: boolean, redirectOnClose?: string) => {
-    if (open && redirectOnClose) {
+  const openBuyZug = (
+    open: boolean,
+    redirectOnClose?: string,
+    onSuccess?: () => void
+  ) => {
+    if (open) {
       setRedirect(redirectOnClose);
+      setOnSuccess(onSuccess);
     }
     handleDialogClose(open);
     setBuyZug(open);
   };
 
-  const openAddBalance = (open: boolean, redirectOnClose?: string) => {
-    if (open && redirectOnClose) {
+  const openAddBalance = (
+    open: boolean,
+    redirectOnClose?: string,
+    onSuccess?: () => void
+  ) => {
+    if (open) {
       setRedirect(redirectOnClose);
+      setOnSuccess(onSuccess);
     }
     handleDialogClose(open);
     setAddBalance(open);
   };
 
-  const openWithdrawBalance = (open: boolean, redirectOnClose?: string) => {
-    if (open && redirectOnClose) {
+  const openWithdrawBalance = (
+    open: boolean,
+    redirectOnClose?: string,
+    onSuccess?: () => void
+  ) => {
+    if (open) {
       setRedirect(redirectOnClose);
+      setOnSuccess(onSuccess);
     }
     handleDialogClose(open);
     setWithdrawBalance(open);
   };
 
-  const openDelete = (open: boolean, redirectOnClose?: string) => {
-    if (open && redirectOnClose) {
+  const openDelete = (
+    open: boolean,
+    redirectOnClose?: string,
+    onSuccess?: () => void
+  ) => {
+    if (open) {
       setRedirect(redirectOnClose);
+      setOnSuccess(onSuccess);
     }
     handleDialogClose(open);
     setDeleteDialog(open);
   };
 
-  const openTrigger = (open: boolean, redirectOnClose?: string) => {
-    if (open && redirectOnClose) {
+  const openTrigger = (
+    open: boolean,
+    redirectOnClose?: string,
+    onSuccess?: () => void
+  ) => {
+    if (open) {
       setRedirect(redirectOnClose);
+      setOnSuccess(onSuccess);
     }
     handleDialogClose(open);
     setTriggerDialog(open);
@@ -109,14 +162,31 @@ export const DialogContextProvider = ({ children }: Props) => {
         openTrigger,
       }}>
       {children}
-      <DialogBuyZug open={buyZug} onOpenChange={openBuyZug} />
-      <DialogAddBalance open={addBalance} onOpenChange={openAddBalance} />
+      <DialogBuyZug
+        open={buyZug}
+        onOpenChange={openBuyZug}
+        onSuccess={onSuccess}
+      />
+      <DialogAddBalance
+        open={addBalance}
+        onOpenChange={openAddBalance}
+        onSuccess={onSuccess}
+      />
       <DialogWithdrawBalance
         open={withdrawBalance}
         onOpenChange={openWithdrawBalance}
+        onSuccess={onSuccess}
       />
-      <DialogDelete open={deleteDialog} onOpenChange={openDelete} />
-      <DialogTrigger open={triggerDialog} onOpenChange={openTrigger} />
+      <DialogDelete
+        open={deleteDialog}
+        onOpenChange={openDelete}
+        onSuccess={onSuccess}
+      />
+      <DialogTrigger
+        open={triggerDialog}
+        onOpenChange={openTrigger}
+        onSuccess={onSuccess}
+      />
     </DialogContext.Provider>
   );
 };

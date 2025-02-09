@@ -48,6 +48,7 @@ export const useShamans = () => {
 
       return shamans;
     },
+    refetchInterval: 2500,
     enabled: !!mud?.components?.Shamans,
   });
 };

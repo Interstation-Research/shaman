@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { formatEther } from 'viem';
-import { DialogProps } from '@radix-ui/react-dialog';
+import { DialogProps } from '@/contexts/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,6 +35,8 @@ export function DialogBuyZug(props: DialogProps) {
         title: 'Success',
         description: 'Purchase successful.',
       });
+
+      props.onSuccess?.();
     } catch (error) {
       console.error(error);
       toast({

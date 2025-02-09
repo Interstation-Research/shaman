@@ -41,6 +41,7 @@ export const useShaman = (shamanId: string) => {
         prompt: metadataJson.prompt,
       };
     },
+    refetchInterval: 2500,
     enabled: !!mud?.components?.Shamans,
   });
 };

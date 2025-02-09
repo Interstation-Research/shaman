@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { DialogProps } from '@radix-ui/react-dialog';
 import { useParams } from 'next/navigation';
+import { DialogProps } from '@/contexts/dialog-context';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -31,6 +31,8 @@ export function DialogTrigger(props: DialogProps) {
         title: 'Success',
         description: 'Shaman triggered successfully.',
       });
+
+      props.onSuccess?.();
     } catch (error) {
       console.error(error);
       toast({

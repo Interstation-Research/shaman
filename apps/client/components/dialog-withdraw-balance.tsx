@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { DialogProps } from '@radix-ui/react-dialog';
 import { useParams } from 'next/navigation';
 import { Hex } from 'viem';
+import { DialogProps } from '@/contexts/dialog-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,6 +37,7 @@ export function DialogWithdrawBalance(props: DialogProps) {
         description: 'Withdrawal successful.',
       });
 
+      props.onSuccess?.();
       props.onOpenChange?.(false);
     } catch (error) {
       console.error(error);

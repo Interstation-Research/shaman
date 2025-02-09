@@ -213,6 +213,7 @@ export default async (context: ShamanContext) => {
       name: 'mint',
       outputs: [],
       stateMutability: 'nonpayable',
+      type: 'function',
     },
   ] as const;
 

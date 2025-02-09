@@ -7,3 +7,18 @@ export type ShamanTriggerResponse = {
   txHash: string;
   logs: string[];
 };
+
+export enum ShamanLogType {
+  Execution,
+  Deposit,
+  Withdraw,
+  Refund,
+}
+
+export type ShamanLog = {
+  shamanLogId: string;
+  shamanId: string;
+  logType: ShamanLogType;
+  amount: number;
+  createdAt: number;
+};

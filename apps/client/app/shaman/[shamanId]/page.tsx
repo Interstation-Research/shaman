@@ -5,6 +5,7 @@ import { Minus, MoreVertical, Plus, Trash2, Zap } from 'lucide-react';
 import { themes } from 'prism-react-renderer';
 import { Highlight } from 'prism-react-renderer';
 import { useParams } from 'next/navigation';
+import { useMemo } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -50,37 +51,61 @@ import { useShaman } from '@/hooks/use-shaman';
 import { useDialogContext } from '@/contexts/dialog-context';
 import { useZugBalance } from '@/hooks/use-zug-balance';
 import { useEmbeddedWallet } from '@/hooks/use-embedded-wallet';
+import { useShamanLogs } from '@/hooks/use-shaman-logs';
+import { ShamanLog, ShamanLogType } from '@/types/shaman';
 
-const chartData = [
-  { day: 'Monday', executions: 186 },
-  { day: 'Tuesday', executions: 305 },
-  { day: 'Wednesday', executions: 237 },
-  { day: 'Thursday', executions: 73 },
-  { day: 'Friday', executions: 209 },
-  { day: 'Saturday', executions: 214 },
-  { day: 'Sunday', executions: 214 },
+type ChartDataPoint = {
+  day: string;
+  executions: number;
+};
+
+type DayExecutions = {
+  [key: string]: number;
+};
+
+const executionLogTypes = [
+  {
+    label: 'Execution',
+    color: 'hsl(var(--chart-1))',
+  },
+  {
+    label: 'Deposit',
+    color: 'hsl(var(--chart-2))',
+  },
+  {
+    label: 'Withdraw',
+    color: 'hsl(var(--chart-3))',
+  },
+  {
+    label: 'Refund',
+    color: 'hsl(var(--chart-4))',
+  },
 ];
 
-const executionData = [
-  {
-    id: '1',
-    name: 'Execution 1',
-    status: 'completed',
-    date: '2024-03-20',
-  },
-  {
-    id: '2',
-    name: 'Execution 2',
-    status: 'failed',
-    date: '2024-03-19',
-  },
-  {
-    id: '3',
-    name: 'Execution 3',
-    status: 'completed',
-    date: '2024-03-18',
-  },
-];
+const getChartData = (logs: ShamanLog[]): ChartDataPoint[] => {
+  const groupedByDay: DayExecutions = logs.reduce((acc, log) => {
+    const date = new Date(log.createdAt);
+    const day = date.toLocaleDateString('en-US', { weekday: 'long' });
+    acc[day] = (acc[day] || 0) + 1;
+    return acc;
+  }, {} as DayExecutions);
+
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  return days.map(
+    (day): ChartDataPoint => ({
+      day,
+      executions: groupedByDay[day] || 0,
+    })
+  );
+};
 
 const chartConfig = {
   executions: {
@@ -92,6 +117,10 @@ const chartConfig = {
 export default function Page() {
   const { shamanId } = useParams();
   const { data: shaman, refetch } = useShaman(shamanId as string);
+  const { data: shamanLogs } = useShamanLogs(shamanId as string);
+  const executionLogs = shamanLogs?.filter(
+    (log) => log.logType === ShamanLogType.Execution
+  );
   const embeddedWallet = useEmbeddedWallet();
   const { refetch: refetchZugBalance } = useZugBalance(
     embeddedWallet?.address as `0x${string}`
@@ -103,6 +132,20 @@ export default function Page() {
     refetch();
     refetchZugBalance();
   };
+
+  const chartData: ChartDataPoint[] = useMemo(
+    () =>
+      getChartData(
+        executionLogs?.map((log) => ({
+          shamanLogId: log.shamanLogId,
+          shamanId: log.shamanId,
+          logType: log.logType,
+          amount: Number(log.amount),
+          createdAt: Number(log.createdAt) * 1000,
+        })) || []
+      ),
+    [executionLogs]
+  );
 
   return (
     <SidebarProvider>
@@ -199,36 +242,61 @@ export default function Page() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Execution Logs</CardTitle>
+                  <CardTitle>Shaman Logs</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
+                        <TableHead>Log Type</TableHead>
+                        <TableHead>Timestamp</TableHead>
                         <TableHead className="w-[50px]"></TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {executionData.map((execution) => (
-                        <TableRow key={execution.id}>
-                          <TableCell>{execution.name}</TableCell>
-                          <TableCell>{execution.status}</TableCell>
-                          <TableCell>{execution.date}</TableCell>
+                      {shamanLogs?.map((log) => (
+                        <TableRow key={log.shamanLogId}>
                           <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <MoreVertical className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem>View tx</DropdownMenuItem>
-                                <DropdownMenuItem>View logs</DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-2 h-2 rounded-full"
+                                style={{
+                                  backgroundColor:
+                                    executionLogTypes[log.logType]?.color,
+                                }}
+                              />
+                              {executionLogTypes[log.logType]?.label}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(
+                              Number(log.createdAt) * 1000
+                            ).toISOString()}
+                          </TableCell>
+                          <TableCell>
+                            {log.logType === ShamanLogType.Execution && (
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0">
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                      window.open(
+                                        `https://gateway.pinata.cloud/ipfs/${log.logMetadata}`,
+                                        '_blank'
+                                      );
+                                    }}>
+                                    View logs
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            )}
                           </TableCell>
                         </TableRow>
                       ))}

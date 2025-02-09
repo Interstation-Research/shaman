@@ -43,7 +43,7 @@ export default function Page() {
         </header>
         {user ? (
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div className="grid auto-rows-min gap-4 md:grid-cols-2 lg:grid-cols-3">
               <Card className="mb-4 flex flex-col min-h-[200px]">
                 <CardHeader>
                   <CardTitle>Create New Shaman</CardTitle>

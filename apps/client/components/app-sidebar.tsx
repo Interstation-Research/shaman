@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Sparkles, Book, Send, X } from 'lucide-react';
+import { Sparkles, Book, X } from 'lucide-react';
 
 import Link from 'next/link';
 import { NavShamans } from '@/components/nav-shamans';
@@ -21,17 +21,12 @@ const data = {
   navSecondary: [
     {
       title: 'Follow us on X',
-      url: '#',
+      url: 'https://x.com/shamandotfun',
       icon: X,
     },
     {
-      title: 'Telegram',
-      url: '#',
-      icon: Send,
-    },
-    {
       title: 'Documentation',
-      url: '#',
+      url: 'https://docs.shaman.fun',
       icon: Book,
     },
   ],

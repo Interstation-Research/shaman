@@ -17,12 +17,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useMUD } from '@/contexts/mud-context';
+import { useShaman } from '@/hooks/use-shaman';
 
 export function DialogWithdrawBalance(props: DialogProps) {
   const mud = useMUD();
   const [loading, setLoading] = useState(false);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(1);
   const { shamanId } = useParams();
+  const { data: shaman } = useShaman(shamanId as string);
 
   const handleWithdraw = async () => {
     setLoading(true);
@@ -57,7 +59,12 @@ export function DialogWithdrawBalance(props: DialogProps) {
         <DialogHeader>
           <DialogTitle>Withdraw Balance</DialogTitle>
           <DialogDescription>
-            Withdraw ZUG tokens from your Shaman Balance.
+            <span className="block text-sm text-muted-foreground mb-2">
+              Withdraw $ZUG tokens from your Shaman Balance.
+            </span>
+            <span className="block text-sm text-muted-foreground">
+              Your Shaman&apos;s $ZUG Balance: {Number(shaman?.balance)}
+            </span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-2">

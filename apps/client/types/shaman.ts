@@ -6,6 +6,7 @@ export type ShamanTriggerResponse = {
   logMetadataHash: string;
   txHash: string;
   logs: string[];
+  error?: string;
 };
 
 export enum ShamanLogType {

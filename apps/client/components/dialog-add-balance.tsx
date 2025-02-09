@@ -17,11 +17,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useMUD } from '@/contexts/mud-context';
-
+import { useEmbeddedWallet } from '@/hooks/use-embedded-wallet';
+import { useZugBalance } from '@/hooks/use-zug-balance';
 export function DialogAddBalance(props: DialogProps) {
   const mud = useMUD();
   const [loading, setLoading] = useState(false);
-  const [quantity, setQuantity] = useState(10);
+  const [quantity, setQuantity] = useState(1);
+  const embeddedWallet = useEmbeddedWallet();
+  const { data: zugBalance } = useZugBalance(
+    embeddedWallet?.address as `0x${string}`
+  );
   const { shamanId } = useParams();
 
   const handleAddBalance = async () => {
@@ -57,7 +62,12 @@ export function DialogAddBalance(props: DialogProps) {
         <DialogHeader>
           <DialogTitle>Add Balance</DialogTitle>
           <DialogDescription>
-            Add ZUG tokens to your Shaman Balance.
+            <span className="block text-sm text-muted-foreground mb-2">
+              Add $ZUG tokens to your Shaman Balance.
+            </span>
+            <span className="block text-sm text-muted-foreground">
+              Your $ZUG Balance: {Number(zugBalance)}
+            </span>
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2 py-2">
@@ -68,7 +78,7 @@ export function DialogAddBalance(props: DialogProps) {
             <Input
               id="quantity"
               value={quantity}
-              max={1000000000}
+              max={Number(zugBalance)}
               onChange={(e) => setQuantity(Number(e.target.value))}
               type="number"
               className="text-right"

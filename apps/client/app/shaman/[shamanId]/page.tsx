@@ -167,7 +167,7 @@ export default function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="flex flex-col gap-4">
               <Card>
                 <CardHeader>
@@ -288,7 +288,7 @@ export default function Page() {
                                     className="cursor-pointer"
                                     onClick={() => {
                                       window.open(
-                                        `https://gateway.pinata.cloud/ipfs/${log.logMetadata}`,
+                                        `https://gateway.shaman.fun/ipfs/${log.logMetadata}`,
                                         '_blank'
                                       );
                                     }}>

@@ -28,8 +28,11 @@ export function DialogTrigger(props: DialogProps) {
       setResponse(response);
 
       toast({
-        title: 'Success',
-        description: 'Shaman triggered successfully.',
+        title: response.success ? 'Success' : 'Error',
+        description: response.success
+          ? 'Shaman has been triggered.'
+          : `Shaman failed to trigger. ${response.error || 'Unknown error.'}`,
+        variant: response.success ? 'default' : 'destructive',
       });
 
       props.onSuccess?.();
@@ -51,16 +54,36 @@ export function DialogTrigger(props: DialogProps) {
         <DialogHeader>
           <DialogTitle>Trigger Shaman</DialogTitle>
           <DialogDescription>
-            Are you sure you want to trigger this Shaman? This action will
-            execute the Shaman&apos;s task.
+            <span className="block text-sm text-muted-foreground mb-2">
+              Are you sure you want to trigger this Shaman? This action will
+              execute the Shaman&apos;s task.
+            </span>
+            <span className="block text-sm text-muted-foreground">
+              This action will cost you 1 $ZUG.
+            </span>
           </DialogDescription>
         </DialogHeader>
         {response && (
-          <div className="mt-4">
-            <h3 className="text-lg font-medium">Response</h3>
-            <pre className="mt-2 p-4 bg-gray-100 rounded-md">
-              {JSON.stringify(response, null, 2)}
-            </pre>
+          <div className="flex flex-row justify-between gap-2 mt-4 mb-4">
+            <p className="text-sm text-muted-foreground">
+              Execution Status:{' '}
+              <span
+                className={
+                  response.success ? 'text-green-500' : 'text-red-500'
+                }>
+                {response.success ? 'Success' : 'Failed'}
+              </span>
+            </p>
+            {response.success && (
+              <p className="text-sm text-muted-foreground underline">
+                <a
+                  href={`https://gateway.shaman.fun/ipfs/${response.logMetadataHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  View Logs
+                </a>
+              </p>
+            )}
           </div>
         )}
         <DialogFooter>

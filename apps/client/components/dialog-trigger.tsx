@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { DialogProps } from '@radix-ui/react-dialog';
-// import { useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import {
@@ -13,22 +13,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { triggerShaman } from '@/services/api';
+import { ShamanTriggerResponse } from '@/types/shaman';
 
 export function DialogTrigger(props: DialogProps) {
   const [loading, setLoading] = useState(false);
-  // const { shamanId } = useParams();
+  const [response, setResponse] = useState<ShamanTriggerResponse | null>(null);
+  const { shamanId } = useParams();
 
   const handleTrigger = async () => {
     setLoading(true);
     try {
-      // await mud?.calls.embedded?.systemCalls?.triggerShaman(shamanId as Hex);
+      const response = await triggerShaman(shamanId as string);
+      setResponse(response);
 
       toast({
         title: 'Success',
         description: 'Shaman triggered successfully.',
       });
-
-      props.onOpenChange?.(false);
     } catch (error) {
       console.error(error);
       toast({
@@ -51,6 +53,14 @@ export function DialogTrigger(props: DialogProps) {
             execute the Shaman&apos;s task.
           </DialogDescription>
         </DialogHeader>
+        {response && (
+          <div className="mt-4">
+            <h3 className="text-lg font-medium">Response</h3>
+            <pre className="mt-2 p-4 bg-gray-100 rounded-md">
+              {JSON.stringify(response, null, 2)}
+            </pre>
+          </div>
+        )}
         <DialogFooter>
           <Button disabled={loading} onClick={handleTrigger} type="submit">
             {loading ? 'Triggering...' : 'Trigger Shaman'}

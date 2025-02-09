@@ -13,6 +13,7 @@ export interface DialogProps {
   onOpenChange: (open: boolean) => void;
   redirectOnClose?: string;
   onSuccess?: () => void;
+  shamanId?: string;
 }
 
 export type Dialogs = {
@@ -24,27 +25,32 @@ export type Dialogs = {
   openBuyZug: (
     open: boolean,
     redirect?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => void;
   openAddBalance: (
     open: boolean,
     redirect?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => void;
   openWithdrawBalance: (
     open: boolean,
     redirect?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => void;
   openDelete: (
     open: boolean,
     redirect?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => void;
   openTrigger: (
     open: boolean,
     redirect?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => void;
 };
 
@@ -73,6 +79,7 @@ export const DialogContextProvider = ({ children }: Props) => {
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
   const [onSuccess, setOnSuccess] = useState<() => void | undefined>();
   const [triggerDialog, setTriggerDialog] = useState(false);
+  const [shamanId, setShamanId] = useState<string | undefined>(undefined);
   const router = useRouter();
 
   const handleDialogClose = (open: boolean) => {
@@ -85,11 +92,13 @@ export const DialogContextProvider = ({ children }: Props) => {
   const openBuyZug = (
     open: boolean,
     redirectOnClose?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => {
     if (open) {
       setRedirect(redirectOnClose);
       setOnSuccess(onSuccess);
+      setShamanId(shamanId);
     }
     handleDialogClose(open);
     setBuyZug(open);
@@ -98,11 +107,13 @@ export const DialogContextProvider = ({ children }: Props) => {
   const openAddBalance = (
     open: boolean,
     redirectOnClose?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => {
     if (open) {
       setRedirect(redirectOnClose);
       setOnSuccess(onSuccess);
+      setShamanId(shamanId);
     }
     handleDialogClose(open);
     setAddBalance(open);
@@ -111,11 +122,13 @@ export const DialogContextProvider = ({ children }: Props) => {
   const openWithdrawBalance = (
     open: boolean,
     redirectOnClose?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => {
     if (open) {
       setRedirect(redirectOnClose);
       setOnSuccess(onSuccess);
+      setShamanId(shamanId);
     }
     handleDialogClose(open);
     setWithdrawBalance(open);
@@ -124,11 +137,13 @@ export const DialogContextProvider = ({ children }: Props) => {
   const openDelete = (
     open: boolean,
     redirectOnClose?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => {
     if (open) {
       setRedirect(redirectOnClose);
       setOnSuccess(onSuccess);
+      setShamanId(shamanId);
     }
     handleDialogClose(open);
     setDeleteDialog(open);
@@ -137,11 +152,13 @@ export const DialogContextProvider = ({ children }: Props) => {
   const openTrigger = (
     open: boolean,
     redirectOnClose?: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    shamanId?: string
   ) => {
     if (open) {
       setRedirect(redirectOnClose);
       setOnSuccess(onSuccess);
+      setShamanId(shamanId);
     }
     handleDialogClose(open);
     setTriggerDialog(open);
@@ -171,21 +188,25 @@ export const DialogContextProvider = ({ children }: Props) => {
         open={addBalance}
         onOpenChange={openAddBalance}
         onSuccess={onSuccess}
+        shamanId={shamanId}
       />
       <DialogWithdrawBalance
         open={withdrawBalance}
         onOpenChange={openWithdrawBalance}
         onSuccess={onSuccess}
+        shamanId={shamanId}
       />
       <DialogDelete
         open={deleteDialog}
         onOpenChange={openDelete}
         onSuccess={onSuccess}
+        shamanId={shamanId}
       />
       <DialogTrigger
         open={triggerDialog}
         onOpenChange={openTrigger}
         onSuccess={onSuccess}
+        shamanId={shamanId}
       />
     </DialogContext.Provider>
   );

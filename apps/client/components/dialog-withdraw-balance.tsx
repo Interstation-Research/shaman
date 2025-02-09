@@ -23,7 +23,8 @@ export function DialogWithdrawBalance(props: DialogProps) {
   const mud = useMUD();
   const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const { shamanId } = useParams();
+  const { shamanId: shamanIdParam } = useParams();
+  const shamanId = props.shamanId || shamanIdParam;
   const { data: shaman } = useShaman(shamanId as string);
 
   const handleWithdraw = async () => {

@@ -19,7 +19,8 @@ import { ShamanTriggerResponse } from '@/types/shaman';
 export function DialogTrigger(props: DialogProps) {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<ShamanTriggerResponse | null>(null);
-  const { shamanId } = useParams();
+  const { shamanId: shamanIdParam } = useParams();
+  const shamanId = props.shamanId || shamanIdParam;
 
   const handleTrigger = async () => {
     setLoading(true);

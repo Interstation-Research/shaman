@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useShamans } from '@/hooks/use-shamans';
 import { trimHash } from '@/lib/utils';
+import { useDialogContext } from '@/contexts/dialog-context';
 
 export function NavShamans() {
   const { user, login } = usePrivy();
@@ -30,6 +31,7 @@ export function NavShamans() {
   const { isMobile } = useSidebar();
   const { data: shamans } = useShamans();
   const { shamanId } = useParams();
+  const { openTrigger, openDelete } = useDialogContext();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -54,12 +56,24 @@ export function NavShamans() {
                 className="w-48"
                 side={isMobile ? 'bottom' : 'right'}
                 align={isMobile ? 'end' : 'start'}>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    openTrigger(
+                      true,
+                      `/shaman/${item.shamanId}`,
+                      undefined,
+                      item.shamanId
+                    )
+                  }>
                   <Zap className="text-muted-foreground" />
                   <span>Trigger</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-500">
+                <DropdownMenuItem
+                  onClick={() =>
+                    openDelete(true, `/`, undefined, item.shamanId)
+                  }
+                  className="text-red-500">
                   <Trash2 className="text-red-500" />
                   <span>Delete</span>
                 </DropdownMenuItem>

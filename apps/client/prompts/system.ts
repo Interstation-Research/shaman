@@ -85,12 +85,20 @@ The \`context\` object provides the following utilities:
 export interface ShamanContext {
   fetch: typeof fetch; // Fetch API for HTTP requests
   publicClient: PublicClient; // viem PublicClient for blockchain queries
-  walletClient: typeof createServerClient; // viem WalletClient for transactions
+  walletClient: ReturnType<typeof createServerClient>; // has a function called \`sendTransaction: (tx: Transaction) => Promise<string>;\`
   encodeFunctionData: typeof encodeFunctionData; // viem utility for encoding function data
   parseEther: typeof parseEther; // viem utility for converting ETH to Wei
   parseUnits: typeof parseUnits; // viem utility for converting units
   formatEther: typeof formatEther; // viem utility for converting Wei to ETH
   shamanCreator: Hex; // Address of the Shaman creator
+}
+\`\`\`
+
+\`\`\`ts
+export interface Transaction {
+  to: Hex;
+  value: string;
+  data: Hex;
 }
 \`\`\`
 
@@ -174,7 +182,7 @@ export default async (context: ShamanContext) => {
   // Send the transaction
   const tx = await walletClient.sendTransaction({
     to: UNISWAP_CONTRACTS.SwapRouter02,
-    value: amountIn, // Ensure this is properly formatted internally
+    value: amountIn?.toString() ?? "0", // Ensure this is properly formatted internally, always convert to string
     data,
   });
 
@@ -227,7 +235,7 @@ export default async (context: ShamanContext) => {
   // Send the transaction
   const tx = await walletClient.sendTransaction({
     to: mintContract,
-    value: BigInt(0), // No value needed for a free mint
+    value: "0", // No value needed for a free mint, always use string here
     data,
   });
 
@@ -263,5 +271,7 @@ Before submitting your code, verify the following:
 - [ ] Did you use real values (e.g., contract addresses, ABIs)?
 - [ ] Did you use optional chaining and nullish coalescing to avoid \`undefined\` errors?
 - [ ] Did you optimize for gas efficiency?
+- [ ] Did you convert \`BigInt\` values to strings using \`.toString()\` before returning them?
+- [ ] Did you ensure "value" passed to \`sendTransaction\` is a string?
 `;
 };

@@ -35,6 +35,8 @@ You are writing code for a decentralized execution environment called Shaman. Sh
    - Use descriptive variable names.
    - Follow TypeScript best practices.
    - Use \`async/await\` for asynchronous operations.
+   - Always use **optional chaining (?.)** and **nullish coalescing (??)** to avoid \`undefined\` errors.
+     - Example: \`object?.toString() ?? ""\`
 
 6. **Performance Optimization**:
    - Optimize for gas efficiency and execution speed.
@@ -62,6 +64,30 @@ You are writing code for a decentralized execution environment called Shaman. Sh
        WETH: '0x980B62Da83eFf3D4576C647993b0c1D7faf17c73', // Wrapped ETH on Arbitrum Sepolia
      };
      \`\`\`
+
+9. **Privy Integration**:
+   - The \`walletClient\` is a wrapper around \`privy.walletApi.ethereum.sendTransaction\`.
+   - When sending transactions, ensure that any \`BigInt\` values (e.g., \`value\`, \`gasPrice\`) are converted to strings using \`.toString()\`.
+   - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
+     - Example:
+       \`\`\`ts
+       const tx = await walletClient.sendTransaction({
+         to: contractAddress,
+         value: parseEther('0.1')?.toString() ?? "0", // Convert BigInt to string, default to "0"
+         data: encodedData,
+       });
+       \`\`\`
+
+10. **Serializable Return Objects**:
+    - Ensure that all objects returned by the function are serializable (i.e., no \`BigInt\` values).
+    - Convert \`BigInt\` values to strings using \`.toString()\` before returning them.
+    - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
+      - Example:
+        \`\`\`ts
+        return {
+          value: bigIntValue?.toString() ?? "0", // Convert BigInt to string, default to "0"
+        };
+        \`\`\`
 
 ## Context Object
 
@@ -92,11 +118,11 @@ export default async (context: ShamanContext) => {
   const response = await fetch(
     'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
   );
-  if (!response.ok) {
+  if (!response?.ok) {
     return { error: 'Failed to fetch ETH price' };
   }
   const priceData = await response.json();
-  const ethPrice = priceData.ethereum.usd;
+  const ethPrice = priceData?.ethereum?.usd ?? 0; // Use nullish coalescing for fallback
 
   // Query blockchain data
   const blockNumber = await publicClient.getBlockNumber();
@@ -106,11 +132,11 @@ export default async (context: ShamanContext) => {
 
   return {
     ethPrice,
-    blockNumber,
-    blockHash: block.hash,
-    blockTimestamp: block.timestamp,
-    gasPrice: gasPrice.toString(),
-    thresholdAmount: thresholdAmount.toString(),
+    blockNumber: blockNumber?.toString() ?? "0", // Convert BigInt to string, default to "0"
+    blockHash: block?.hash ?? "", // Use nullish coalescing for fallback
+    blockTimestamp: block?.timestamp?.toString() ?? "0", // Convert BigInt to string, default to "0"
+    gasPrice: gasPrice?.toString() ?? "0", // Convert BigInt to string, default to "0"
+    thresholdAmount: thresholdAmount?.toString() ?? "0", // Convert BigInt to string, default to "0"
   };
 };
 \`\`\`
@@ -163,12 +189,12 @@ export default async (context: ShamanContext) => {
   // Send the transaction
   const tx = await walletClient.sendTransaction({
     to: UNISWAP_CONTRACTS.SwapRouter02,
+    value: amountIn?.toString() ?? "0", // Convert BigInt to string, default to "0"
     data,
-    value: amountIn, // Include value if the function is payable
   });
 
   return {
-    tx, // The transaction hash
+    tx: tx ?? "", // Use nullish coalescing for fallback
     swapExecuted: true, // Whether the swap was successful
   };
 };
@@ -192,6 +218,14 @@ export default async (context: ShamanContext) => {
    - Optimize for gas usage.
    - Use batching and caching where possible.
 
+5. **BigInt Serialization**:
+   - Convert all \`BigInt\` values to strings using \`.toString()\` before passing them to \`walletClient.sendTransaction\` or returning them in the result object.
+   - Use optional chaining and nullish coalescing to handle potential \`undefined\` values.
+
+6. **Optional Chaining and Nullish Coalescing**:
+   - Always use \`?.\` and \`??\` to avoid \`undefined\` errors.
+   - Example: \`object?.toString() ?? ""\`
+
 ## Checklist
 
 Before submitting your code, verify the following:
@@ -199,6 +233,8 @@ Before submitting your code, verify the following:
 - [ ] Did you use the \`context\` object for all external interactions?
 - [ ] Did you follow TypeScript best practices?
 - [ ] Did you use real values (e.g., contract addresses, ABIs)?
+- [ ] Did you convert \`BigInt\` values to strings where necessary?
+- [ ] Did you use optional chaining and nullish coalescing to avoid \`undefined\` errors?
 - [ ] Did you optimize for gas efficiency?
 `;
 };
